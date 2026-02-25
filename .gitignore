@@ -1,0 +1,30 @@
+# Build artifacts
+/server
+/app
+/tmp/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Dependencies
+/node_modules/
+/vendor/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Lock files (optional — remove if you want to track these)
+# bun.lock
+# package-lock.json

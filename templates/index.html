@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Golang Codes - Learn Go Interactively</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+        rel="stylesheet" />
+
+    <!-- Tailwind CSS with custom font config -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                        heading: ["Plus Jakarta Sans", "sans-serif"],
+                    },
+                    colors: {
+                        goblue: {
+                            50: "#f0f9ff",
+                            100: "#e0f2fe",
+                            500: "#00ADD8",
+                            600: "#007D9C",
+                        },
+                    },
+                },
+            },
+        };
+    </script>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <!-- Prevent flash of wrong theme -->
+    <script>
+        if (
+            localStorage.theme === "dark" ||
+            (!("theme" in localStorage) &&
+                window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+        }
+    </script>
+
+    <!-- Monaco Editor CSS -->
+    <link rel="stylesheet" data-name="vs/editor/editor.main"
+        href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.min.css" />
+
+    <!-- PrismJS Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <style>
+        /* Custom scrollbar for better appearance */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        /* Dark mode scrollbar */
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Premium Typography Styles */
+        .resource-content h1 {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1.25rem;
+            color: #0f172a;
+            letter-spacing: -0.025em;
+            line-height: 1.2;
+            transition: color 0.2s;
+        }
+
+        .resource-content h2 {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #1e293b;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+            transition:
+                color 0.2s,
+                border-color 0.2s;
+        }
+
+        .resource-content h3 {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: #334155;
+            transition: color 0.2s;
+        }
+
+        .resource-content p {
+            font-family: "Inter", sans-serif;
+            margin-bottom: 1.25rem;
+            line-height: 1.8;
+            color: #475569;
+            font-size: 1.0625rem;
+            transition: color 0.2s;
+        }
+
+        .resource-content strong {
+            color: #1e293b;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        /* Prism overrides for Notion structure */
+        .resource-content pre[class*="language-"] {
+            margin-bottom: 1.75rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+        }
+
+        .resource-content pre[class*="language-"]:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            border-color: #cbd5e1;
+        }
+
+        .resource-content pre[class*="language-"]::after {
+            content: "Click to edit →";
+            position: absolute;
+            top: 0.75rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #94a3b8;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-family: "Inter", sans-serif;
+        }
+
+        .resource-content pre[class*="language-"]:hover::after {
+            opacity: 1;
+            color: #f8fafc;
+        }
+
+        .resource-content code {
+            font-family:
+                ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+                "Liberation Mono", "Courier New", monospace;
+            color: #0ea5e9;
+            background-color: #f0f9ff;
+            padding: 0.2rem 0.375rem;
+            border-radius: 0.375rem;
+            font-size: 0.875em;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .resource-content pre code {
+            background-color: transparent;
+            padding: 0;
+            color: inherit;
+            font-size: 0.875rem;
+            font-weight: normal;
+        }
+
+        .resource-content ul {
+            list-style-type: none;
+            margin-left: 0;
+            margin-bottom: 1.5rem;
+            color: #475569;
+            padding-left: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .resource-content ul>li {
+            position: relative;
+            margin-bottom: 0.5rem;
+            line-height: 1.7;
+            font-size: 1.0625rem;
+        }
+
+        .resource-content ul>li::before {
+            content: "•";
+            color: #0ea5e9;
+            font-weight: bold;
+            position: absolute;
+            left: -1.25rem;
+            font-size: 1.2em;
+            top: -0.1em;
+            transition: color 0.2s;
+        }
+
+        .resource-content ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .resource-content ol>li {
+            margin-bottom: 0.5rem;
+            line-height: 1.7;
+            font-size: 1.0625rem;
+            color: #475569;
+            transition: color 0.2s;
+        }
+
+        .resource-content a {
+            color: #0284c7;
+            text-decoration: underline;
+            text-decoration-color: #bae6fd;
+            text-underline-offset: 4px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .resource-content a:hover {
+            color: #0369a1;
+            text-decoration-color: #0284c7;
+        }
+
+        /* Video wrapper styling */
+        .resource-content iframe {
+            border-radius: 0.75rem;
+            box-shadow:
+                0 10px 15px -3px rgb(0 0 0 / 0.1),
+                0 4px 6px -4px rgb(0 0 0 / 0.1);
+            margin: 2rem 0;
+            border: 1px solid #f1f5f9;
+            transition: border-color 0.2s;
+        }
+
+        body {
+            background-color: #f8fafc;
+            transition:
+                background-color 0.2s,
+                color 0.2s;
+        }
+
+        /* Dark Mode Overrides */
+        .dark body {
+            background-color: #0f172a;
+        }
+
+        .dark .resource-content h1 {
+            color: #f8fafc;
+        }
+
+        .dark .resource-content h2 {
+            color: #e2e8f0;
+            border-color: #1e293b;
+        }
+
+        .dark .resource-content h3 {
+            color: #cbd5e1;
+        }
+
+        .dark .resource-content p {
+            color: #94a3b8;
+        }
+
+        .dark .resource-content strong {
+            color: #f1f5f9;
+        }
+
+        .dark .resource-content pre[class*="language-"] {
+            border-color: #334155;
+            box-shadow: none;
+            background-color: #020617 !important;
+        }
+
+        .dark .resource-content pre[class*="language-"]:hover {
+            border-color: #475569;
+        }
+
+        .dark .resource-content code {
+            color: #38bdf8;
+            background-color: #1e293b;
+        }
+
+        .dark .resource-content pre code {
+            background-color: transparent;
+            color: inherit;
+        }
+
+        .dark .resource-content ul,
+        .dark .resource-content ol {
+            color: #94a3b8;
+        }
+
+        .dark .resource-content ul>li::before {
+            color: #38bdf8;
+        }
+
+        .dark .resource-content a {
+            color: #38bdf8;
+            text-decoration-color: #0369a1;
+        }
+
+        .dark .resource-content a:hover {
+            color: #7dd3fc;
+            text-decoration-color: #38bdf8;
+        }
+
+        .dark .resource-content iframe {
+            border-color: #1e293b;
+        }
+    </style>
+</head>
+
+<body
+    class="text-slate-800 dark:text-slate-200 h-screen flex overflow-hidden font-sans antialiased bg-slate-50 dark:bg-slate-900 selection:bg-goblue-100 dark:selection:bg-goblue-900 selection:text-goblue-600 dark:selection:text-goblue-100 transition-colors duration-200">
+    <!-- Sidebar: Resources List (20%) -->
+    <aside
+        class="w-64 xl:w-72 bg-slate-50 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full shadow-sm z-10 shrink-0 transition-colors duration-200">
+        <div
+            class="p-6 border-b border-slate-200 dark:border-slate-800 flex flex-col items-center gap-4 bg-white dark:bg-slate-900 transition-colors duration-200">
+            <img src="/static/golangcodeslogo.jpeg" alt="Golang Codes Logo"
+                class="w-full h-auto object-contain max-h-16 mix-blend-multiply dark:invert opacity-90 transition-all" />
+
+            <div class="flex items-center justify-between w-full px-1">
+                <div class="flex items-center gap-1.5 text-slate-700 dark:text-slate-200 cursor-help"
+                    title="Experience Points - Earn by reading and running code!">
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                        </path>
+                    </svg>
+                    <span id="user-score" class="font-bold text-sm tracking-wide">0 XP</span>
+                </div>
+
+                <button id="theme-toggle"
+                    class="text-sm flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                    <svg id="theme-toggle-dark-icon" class="hidden w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                    <svg id="theme-toggle-light-icon" class="hidden w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                            fill-rule="evenodd" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-1">
+            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">
+                Learning Resources
+            </h2>
+            {{range .Resources}}
+            <a href="{{.Path}}"
+                class="block px-3 py-2 rounded-lg hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm hover:text-slate-900 dark:hover:text-slate-100 transition-all {{if $.ActiveResource}}{{if eq $.ActiveResource.Path .Path}}bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm font-semibold border-l-4 border-[#5fbceb]{{else}}text-slate-600 dark:text-slate-400{{end}}{{else}}text-slate-600 dark:text-slate-400{{end}}">
+                {{.Title}}
+            </a>
+            {{else}}
+            <p class="text-sm text-slate-500 dark:text-slate-500">
+                No resources found.
+            </p>
+            {{end}}
+        </div>
+    </aside>
+
+    <!-- Main Content: Reading Material (40%) -->
+    <main
+        class="flex-1 min-w-0 bg-white dark:bg-[#0f172a] border-r border-slate-200 dark:border-slate-800 flex flex-col h-full overflow-y-auto shadow-inner relative transition-colors duration-200">
+        {{if .ActiveResource}}
+        <article class="p-8 lg:p-12 max-w-4xl mx-auto w-full resource-content pb-12">
+            {{.ActiveResource.Content}}
+
+            <!-- Page Navigation -->
+            <div
+                class="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row gap-4 justify-between items-center transition-colors duration-200">
+                <div class="flex-1 text-left w-full sm:w-auto">
+                    {{if .PrevResource}}
+                    <a href="{{.PrevResource.Path}}"
+                        class="inline-flex items-center gap-2 text-[#5fbceb] hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm font-medium p-2 -ml-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                            </path>
+                        </svg>
+                        <span class="flex flex-col">
+                            <span class="text-xs text-slate-500 dark:text-slate-400 font-normal">Previous</span>
+                            <span>{{.PrevResource.Title}}</span>
+                        </span>
+                    </a>
+                    {{end}}
+                </div>
+
+                <div class="flex-1 text-right w-full sm:w-auto flex justify-end">
+                    {{if .NextResource}}
+                    <a href="{{.NextResource.Path}}"
+                        class="inline-flex items-center gap-2 text-[#5fbceb] hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm font-medium p-2 -mr-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">
+                        <span class="flex flex-col text-right">
+                            <span class="text-xs text-slate-500 dark:text-slate-400 font-normal">Next</span>
+                            <span>{{.NextResource.Title}}</span>
+                        </span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                            </path>
+                        </svg>
+                    </a>
+                    {{end}}
+                </div>
+            </div>
+
+            <div class="mt-12 text-center transition-colors duration-200">
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-2xl mx-auto leading-relaxed">
+                    This syllabus relies on community contributions. If you know a great free resource or have a better
+                    explanation than what we wrote, click the "Edit
+                    this page" button below, add it to this list in the Markdown/HTML, and submit a Pull Request. We'll
+                    review and merge it!
+                </p>
+                <a href="https://github.com/hersi/golang.codes/edit/main/Go/{{.ActiveResource.Title}}.md"
+                    target="_blank" rel="noopener noreferrer"
+                    class="inline-flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors text-sm font-medium bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 px-4 py-2 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill-rule="evenodd"
+                            d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    Edit this page on GitHub
+                </a>
+            </div>
+        </article>
+
+        <img src="/static/gopher.webp"
+            class="fixed bottom-4 right-[42%] w-16 h-16 opacity-10 pointer-events-none mix-blend-multiply" alt="" />
+        {{else}}
+        <div
+            class="flex-1 flex flex-col items-center justify-center text-center p-8 bg-slate-50/50 dark:bg-slate-900/50 transition-colors duration-200">
+            <img src="/static/gopher.webp" alt="Gopher"
+                class="w-24 h-24 mb-6 opacity-30 mix-blend-multiply dark:invert dark:opacity-20 grayscale transition-all" />
+            <h2 class="text-3xl font-bold text-slate-700 dark:text-slate-200 mb-3 transition-colors duration-200">
+                Welcome to Golang Codes
+            </h2>
+            <p class="text-lg text-slate-500 dark:text-slate-400 max-w-sm mb-6 transition-colors duration-200">
+                Select a topic from the sidebar to dive into Go programming.
+            </p>
+
+            <a id="resume-btn" href="#"
+                class="hidden inline-flex items-center gap-2 bg-[#5fbceb] hover:bg-blue-500 text-white dark:text-slate-900 font-semibold py-2.5 px-6 rounded-full shadow hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+                Resume Learning
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3">
+                    </path>
+                </svg>
+            </a>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    const lastPage = localStorage.getItem('lastVisitedPage');
+                    if (lastPage) {
+                        const btn = document.getElementById('resume-btn');
+                        if (btn) {
+                            btn.href = lastPage;
+                            btn.classList.remove('hidden');
+                        }
+                    }
+                });
+            </script>
+        </div>
+        {{end}}
+    </main>
+
+    <!-- Right Pane: Editor & Output (40%) -->
+    <section
+        class="w-[45%] lg:w-[40%] xl:w-[45%] shrink-0 bg-white dark:bg-slate-900 flex flex-col h-full relative shadow-lg z-20 border-l border-slate-200 dark:border-slate-800 transition-colors duration-200">
+        <!-- Action Bar -->
+        <div
+            class="h-14 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 bg-slate-50 dark:bg-[#0d1117] shrink-0 transition-colors duration-200">
+            <div class="flex items-center gap-3">
+                <div
+                    class="flex space-x-1.5 shadow-sm bg-white dark:bg-slate-800 p-1.5 rounded-md border border-slate-200 dark:border-slate-700 transition-colors duration-200">
+                    <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+                </div>
+                <span
+                    class="text-sm font-semibold text-slate-600 dark:text-slate-400 transition-colors duration-200">main.go</span>
+            </div>
+            <button id="run-btn"
+                class="bg-[#1e293b] hover:bg-slate-900 dark:bg-blue-600 dark:hover:bg-blue-500 text-white px-5 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2 transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-slate-900"
+                hx-post="/api/run" hx-target="#output" hx-indicator="#loading" hx-include="#code-input">
+                <svg class="w-4 h-4 text-[#5fbceb]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z">
+                    </path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Run Code
+            </button>
+        </div>
+
+        <!-- Editor Container -->
+        <div id="editor" class="flex-1 min-h-[50%] min-w-0"></div>
+
+        <!-- Hidden input to hold editor content for HTMX submission -->
+        <form id="code-form" class="hidden">
+            <textarea id="code-input" name="code"></textarea>
+        </form>
+
+        <!-- Divider -->
+        <div
+            class="h-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 border-y border-slate-200 dark:border-slate-800 cursor-row-resize shrink-0 flex items-center justify-center transition-colors duration-200">
+            <div class="w-12 h-1 bg-slate-300 dark:bg-slate-600 rounded-full transition-colors duration-200"></div>
+        </div>
+
+        <!-- Output Container -->
+        <div
+            class="h-[40%] bg-slate-50 dark:bg-[#0d1117] flex flex-col shrink-0 relative min-w-0 transition-colors duration-200">
+            <div
+                class="h-10 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 bg-white dark:bg-slate-900 transition-colors duration-200">
+                <span
+                    class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    Terminal
+                </span>
+                <!-- Loading indicator -->
+                <div id="loading"
+                    class="htmx-indicator ml-auto flex items-center gap-2 text-blue-500 text-xs font-medium">
+                    <svg class="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    Compiling & Running...
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto p-5 font-mono text-sm shadow-inner overflow-x-auto" id="output">
+                <span class="text-slate-400 italic">Ready. Press 'Run Code' to execute.</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- PrismJS for Syntax Highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+
+    <!-- Storage API (must load before main.js and inline scripts) -->
+    <script src="/static/storage.js"></script>
+
+    <!-- Custom logic for click-to-editor -->
+    <script>
+        // Run immediately — DOM is already loaded since this script is at the bottom of the body.
+        (function () {
+            // Theme Toggle Logic (wrapped in try-catch so code block binding always works)
+            try {
+                const themeToggleBtn = document.getElementById("theme-toggle");
+                const darkIcon = document.getElementById("theme-toggle-dark-icon");
+                const lightIcon = document.getElementById("theme-toggle-light-icon");
+                const themeText = document.getElementById("theme-toggle-text");
+
+                function updateThemeUI(isDark) {
+                    if (isDark) {
+                        if (lightIcon) lightIcon.classList.remove("hidden");
+                        if (darkIcon) darkIcon.classList.add("hidden");
+                        if (themeText) themeText.textContent = "Light Mode";
+                        if (window.editor) monaco.editor.setTheme("vs-dark");
+                    } else {
+                        if (darkIcon) darkIcon.classList.remove("hidden");
+                        if (lightIcon) lightIcon.classList.add("hidden");
+                        if (themeText) themeText.textContent = "Dark Mode";
+                        if (window.editor) monaco.editor.setTheme("vs");
+                    }
+                }
+
+                updateThemeUI(document.documentElement.classList.contains("dark"));
+
+                const checkMonaco = setInterval(() => {
+                    if (window.editor && window.monaco) {
+                        updateThemeUI(document.documentElement.classList.contains("dark"));
+                        clearInterval(checkMonaco);
+                    }
+                }, 100);
+
+                if (themeToggleBtn) {
+                    themeToggleBtn.addEventListener("click", () => {
+                        const isDark = document.documentElement.classList.toggle("dark");
+                        window.StorageAPI.setTheme(isDark ? "dark" : "light");
+                        updateThemeUI(isDark);
+                    });
+                }
+            } catch (e) {
+                console.warn("Theme toggle init error:", e);
+            }
+
+            function initializeCodeBlocks() {
+                // Apply click-to-edit for all code blocks
+                const codeBlocks = document.querySelectorAll('article pre');
+
+                codeBlocks.forEach((block, index) => {
+                    // Prevent duplicate bindings
+                    if (block.dataset.editorBound === "true") return;
+                    block.dataset.editorBound = "true";
+
+                    const codeNode = block.querySelector('code') || block;
+
+                    // 1. Load from local storage
+                    const currentPath = window.location.pathname;
+                    const savedSnippet = window.StorageAPI.getSnippet(currentPath, index);
+
+                    if (savedSnippet) {
+                        codeNode.textContent = savedSnippet;
+                        // Trigger PrismJS highlighting on it if Prism is available
+                        if (window.Prism) {
+                            Prism.highlightElement(codeNode);
+                        }
+                    }
+
+                    block.title = "Click to edit in the terminal";
+                    block.style.cursor = "pointer";
+
+                    block.addEventListener("click", function () {
+                        let code = codeNode.textContent;
+
+                        // Support importing plain code snippets without structure
+                        if (!code.includes("package main")) {
+                            code = `package main\n\nimport "fmt"\n\nfunc main() {\n\t// Auto-imported snippet\n\t${code.trim().replace(/\n/g, '\n\t')}\n}`;
+                        }
+
+                        if (window.editor) {
+                            window.editor.setValue(code);
+                            window.currentEditingSnippetIndex = index; // track the active snippet
+
+                            // Visual feedback
+                            const originalBg = this.style.backgroundColor;
+                            this.style.backgroundColor = "#dbeafe"; // blue-100
+                            this.style.transition = "background-color 0.2s";
+
+                            setTimeout(() => {
+                                this.style.backgroundColor = originalBg;
+                            }, 300);
+                        }
+                    });
+                });
+            }
+
+            // Bind immediately for initial load
+            initializeCodeBlocks();
+
+            // Bind after HTMX content swaps (when a user clicks a sidebar link)
+            document.body.addEventListener('htmx:load', function () {
+                initializeCodeBlocks();
+            });
+        })();
+    </script>
+
+    <!-- Monaco Editor Scripts -->
+    <script>
+        var require = {
+            paths: {
+                vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs",
+            },
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.nls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.js"></script>
+    <script src="/static/main.js"></script>
+</body>
+
+</html>

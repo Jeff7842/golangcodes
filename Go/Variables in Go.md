@@ -1,5 +1,7 @@
 # Variables in Go
 
+If you totally new to go watch this video.
+https://youtu.be/8uiZC0l4Ajw
 ---
 
 ## Declaration

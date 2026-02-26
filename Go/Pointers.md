@@ -27,6 +27,8 @@ Pointers are a fundamental concept in Go that enable efficient memory management
 
 ## Basic Pointer Concepts
 
+https://youtu.be/2XEQsJLsLN0?si=u3tXTGsiyp7iAANN
+
 A pointer holds the memory address of a value:
 
 *   `&` operator generates a pointer to its operand

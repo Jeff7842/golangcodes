@@ -3,7 +3,6 @@
 Here some common data structures in Go.
 
 * * *
-
 ##  1. **Array**
 
 **Fixed-size ordered collection of elements of the same type.**

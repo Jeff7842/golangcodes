@@ -12,16 +12,19 @@ A curated list of free resources, PDFs, and videos to accelerate your Go learnin
 
 Here are some excellent free video resources to help you mastering Go concepts:
 
-[https://youtu.be/YS4e4q9oBaU](<https://youtu.be/YS4e4q9oBaU>)
+https://youtu.be/YS4e4q9oBaU
 
-[https://youtu.be/un6ZyFkqFKo](<https://youtu.be/un6ZyFkqFKo>)
+https://youtu.be/un6ZyFkqFKo
 
+`If you had to watch just one playlist, watch this playlist. It is the best playlist to learn Go in my experience.`
+https://www.youtube.com/watch?v=inOiIpDHB-o&list=PLui3EUkuMTPhxPWqrrIvr5ckMepIbMilJ
 
+## Articles
 
-# Articles
 [How Go Works under the hood](<https://muratdemirci.com.tr/en/go-runtime-internals/#comments>)
 [Practical Go lessons](<https://www.practical-go-lessons.com/chap-1-programming-a-computer>)
 [How to Code in Go by Digital Ocean](<https://assets.digitalocean.com/books/how-to-code-in-go.pdf>)
+
 ## Contributing
 
 This syllabus relies on community contributions. If you know a great free resource, click the "Edit this page" button below, add it to this list in the Markdown/HTML, and submit a Pull Request. We'll review and merge it!

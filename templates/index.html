@@ -4,7 +4,38 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Golang Codes - Learn Go Interactively</title>
+    <title>{{if .ActiveResource}}{{.ActiveResource.Title}} — {{end}}Golang Codes - Learn Go Interactively</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Learn Go (Golang) interactively with a built-in code editor, 24+ lessons from basics to advanced, gamified progress tracking, and community-driven content. Free and open-source." />
+    <meta name="keywords"
+        content="Go, Golang, learn Go, Go tutorial, Go programming, interactive coding, Go course, Go lessons, Go examples, systems programming" />
+    <meta name="author" content="Golang Codes" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://golang.codes{{if .ActiveResource}}{{.ActiveResource.Path}}{{end}}" />
+    <meta name="theme-color" content="#00ADD8" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://golang.codes{{if .ActiveResource}}{{.ActiveResource.Path}}{{end}}" />
+    <meta property="og:title" content="{{if .ActiveResource}}{{.ActiveResource.Title}} — {{end}}Golang Codes" />
+    <meta property="og:description"
+        content="Learn Go interactively with a built-in code editor, 24+ lessons, gamified XP tracking, and community-driven content. Free and open-source." />
+    <meta property="og:image" content="https://golang.codes/static/golangcodeslogo.jpeg" />
+    <meta property="og:site_name" content="Golang Codes" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{if .ActiveResource}}{{.ActiveResource.Title}} — {{end}}Golang Codes" />
+    <meta name="twitter:description"
+        content="Learn Go interactively with a built-in code editor, 24+ lessons, gamified XP tracking, and community-driven content." />
+    <meta name="twitter:image" content="https://golang.codes/static/golangcodeslogo.jpeg" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="/static/golangcodeslogo.jpeg" />
+    <link rel="apple-touch-icon" href="/static/golangcodeslogo.jpeg" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

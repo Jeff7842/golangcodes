@@ -33,7 +33,7 @@ An open-source, interactive Go learning platform with a built-in code editor, ga
 
 ```bash
 # Clone the repo
-git clone https://github.com/hersi/golang.codes.git
+git clone https://github.com/Golangcodes/golangcodes
 cd golang.codes
 
 # Install Air for hot-reloading

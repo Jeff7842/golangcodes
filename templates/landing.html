@@ -66,22 +66,34 @@
 
     <!-- Dark Mode Flash Prevention -->
     <script>
-        if (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        if (
+            localStorage.theme === "dark" ||
+            (!("theme" in localStorage) &&
+                window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
             document.documentElement.classList.add("dark");
         }
     </script>
 
     <style>
         .hero-gradient {
-            background: linear-gradient(135deg, #0c1220 0%, #0f172a 30%, #0e2a3d 60%, #0a3d5c 100%);
+            background: linear-gradient(135deg,
+                    #0c1220 0%,
+                    #0f172a 30%,
+                    #0e2a3d 60%,
+                    #0a3d5c 100%);
         }
 
         .glow-blue {
-            box-shadow: 0 0 60px rgba(0, 173, 216, 0.15), 0 0 120px rgba(0, 173, 216, 0.05);
+            box-shadow:
+                0 0 60px rgba(0, 173, 216, 0.15),
+                0 0 120px rgba(0, 173, 216, 0.05);
         }
 
         .card-shine {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.05) 0%,
+                    rgba(255, 255, 255, 0) 100%);
         }
 
         @keyframes float {
@@ -146,7 +158,6 @@
 </head>
 
 <body class="bg-slate-950 text-white min-h-screen font-sans antialiased">
-
     <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-slate-950/80 backdrop-blur-xl">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -207,7 +218,8 @@
 
                     <h1
                         class="font-heading text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight fade-in-up fade-in-up-delay-1">
-                        Master <span
+                        Master
+                        <span
                             class="text-transparent bg-clip-text bg-gradient-to-r from-goblue-400 to-goblue-500">Go</span>
                         by
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-goblue-500 to-cyan-400">Writing
@@ -216,8 +228,10 @@
 
                     <p
                         class="text-slate-400 text-lg lg:text-xl mt-6 leading-relaxed max-w-xl fade-in-up fade-in-up-delay-2">
-                        An interactive learning platform with a built-in code editor, 24+ structured lessons,
-                        and gamified progress tracking. Write, run, and learn Go — all in your browser.
+                        An interactive learning platform with a built-in
+                        code editor, 24+ structured lessons, and gamified
+                        progress tracking. Write, run, and learn Go — all in
+                        your browser.
                     </p>
 
                     <div class="flex flex-wrap gap-4 mt-10 fade-in-up fade-in-up-delay-3">
@@ -280,20 +294,34 @@
         <div class="max-w-7xl mx-auto px-6 py-8">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
                 <div class="text-center">
-                    <div class="font-heading text-3xl font-bold text-goblue-400">24+</div>
-                    <div class="text-slate-400 text-sm mt-1">Structured Lessons</div>
+                    <div class="font-heading text-3xl font-bold text-goblue-400">
+                        24+
+                    </div>
+                    <div class="text-slate-400 text-sm mt-1">
+                        Structured Lessons
+                    </div>
                 </div>
                 <div class="text-center">
-                    <div class="font-heading text-3xl font-bold text-goblue-400">100%</div>
-                    <div class="text-slate-400 text-sm mt-1">Free & Open Source</div>
+                    <div class="font-heading text-3xl font-bold text-goblue-400">
+                        100%
+                    </div>
+                    <div class="text-slate-400 text-sm mt-1">Awesome</div>
                 </div>
                 <div class="text-center">
-                    <div class="font-heading text-3xl font-bold text-goblue-400">Live</div>
-                    <div class="text-slate-400 text-sm mt-1">Code Editor</div>
+                    <div class="font-heading text-3xl font-bold text-goblue-400">
+                        Live
+                    </div>
+                    <div class="text-slate-400 text-sm mt-1">
+                        Code Editor
+                    </div>
                 </div>
                 <div class="text-center">
-                    <div class="font-heading text-3xl font-bold text-goblue-400">XP</div>
-                    <div class="text-slate-400 text-sm mt-1">Gamified Progress</div>
+                    <div class="font-heading text-3xl font-bold text-goblue-400">
+                        XP
+                    </div>
+                    <div class="text-slate-400 text-sm mt-1">
+                        Gamified Progress
+                    </div>
                 </div>
             </div>
         </div>
@@ -304,10 +332,11 @@
         <div class="max-w-5xl mx-auto px-6">
             <div class="text-center mb-16">
                 <h2 class="font-heading text-4xl font-bold tracking-tight">
-                    Everything you need to <span class="text-goblue-400">learn Go</span>
+                    Everything you need to
+                    <span class="text-goblue-400">learn Go</span>
                 </h2>
                 <p class="text-slate-400 mt-4 text-lg max-w-2xl mx-auto">
-                    Built by engineers, for engineers. No fluff — just clean code, real examples, and hands-on practice.
+                    Built by people who love learning , for learners.
                 </p>
             </div>
 
@@ -317,9 +346,13 @@
                         class="w-1 h-full rounded-full bg-goblue-500/30 group-hover:bg-goblue-500 transition-colors flex-shrink-0">
                     </div>
                     <div>
-                        <h3 class="font-heading font-bold text-white mb-1">Built-In Code Editor</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed">Full Monaco Editor — the same engine behind VS
-                            Code — embedded directly in your browser.</p>
+                        <h3 class="font-heading font-bold text-white mb-1">
+                            Built-In Code Editor
+                        </h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            Full Monaco Editor — the same engine behind VS
+                            Code — embedded directly in your browser.
+                        </p>
                     </div>
                 </div>
 
@@ -328,9 +361,14 @@
                         class="w-1 h-full rounded-full bg-green-500/30 group-hover:bg-green-500 transition-colors flex-shrink-0">
                     </div>
                     <div>
-                        <h3 class="font-heading font-bold text-white mb-1">Live Code Execution</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed">Run Go code instantly with server-side
-                            execution. See output in real-time, no local setup needed.</p>
+                        <h3 class="font-heading font-bold text-white mb-1">
+                            Live Code Execution
+                        </h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            Run Go code instantly with server-side
+                            execution. See output in real-time, no local
+                            setup needed.
+                        </p>
                     </div>
                 </div>
 
@@ -339,9 +377,14 @@
                         class="w-1 h-full rounded-full bg-yellow-500/30 group-hover:bg-yellow-500 transition-colors flex-shrink-0">
                     </div>
                     <div>
-                        <h3 class="font-heading font-bold text-white mb-1">Click-to-Edit</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed">Click any code example in a lesson to load it
-                            into the editor. Modify, experiment, and run — zero friction.</p>
+                        <h3 class="font-heading font-bold text-white mb-1">
+                            Click-to-Edit
+                        </h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            Click any code example in a lesson to load it
+                            into the editor. Modify, experiment, and run —
+                            zero friction.
+                        </p>
                     </div>
                 </div>
 
@@ -350,9 +393,14 @@
                         class="w-1 h-full rounded-full bg-purple-500/30 group-hover:bg-purple-500 transition-colors flex-shrink-0">
                     </div>
                     <div>
-                        <h3 class="font-heading font-bold text-white mb-1">XP & Gamification</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed">Earn XP for reading lessons and running code.
-                            Track your streak with read counts and completion badges.</p>
+                        <h3 class="font-heading font-bold text-white mb-1">
+                            XP & Gamification
+                        </h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            Earn XP for reading lessons and running code.
+                            Track your streak with read counts and
+                            completion badges.
+                        </p>
                     </div>
                 </div>
 
@@ -361,9 +409,13 @@
                         class="w-1 h-full rounded-full bg-pink-500/30 group-hover:bg-pink-500 transition-colors flex-shrink-0">
                     </div>
                     <div>
-                        <h3 class="font-heading font-bold text-white mb-1">24+ Structured Lessons</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed">From variables to goroutines, channels to
-                            design patterns. A complete, ordered curriculum.</p>
+                        <h3 class="font-heading font-bold text-white mb-1">
+                            24+ Structured Lessons
+                        </h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            From variables to goroutines, channels to design
+                            patterns. A complete, ordered curriculum.
+                        </p>
                     </div>
                 </div>
 
@@ -372,9 +424,13 @@
                         class="w-1 h-full rounded-full bg-orange-500/30 group-hover:bg-orange-500 transition-colors flex-shrink-0">
                     </div>
                     <div>
-                        <h3 class="font-heading font-bold text-white mb-1">Community Driven</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed">Open source and built for contributions. Edit
-                            lessons on GitHub, submit PRs, and help others learn.</p>
+                        <h3 class="font-heading font-bold text-white mb-1">
+                            Community Driven
+                        </h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            Our content is a community-driven work in progress. Help us improve accuracy by editing
+                            lessons on GitHub, fixing explanations, and submitting PRs!
+                        </p>
                     </div>
                 </div>
             </div>
@@ -385,8 +441,12 @@
     <section class="py-24 bg-slate-900/30 border-y border-white/5">
         <div class="max-w-4xl mx-auto px-6">
             <div class="text-center mb-12">
-                <h2 class="font-heading text-4xl font-bold tracking-tight">Course Syllabus</h2>
-                <p class="text-slate-400 mt-4 text-lg">From zero to production-grade Go. Every lesson has runnable code.
+                <h2 class="font-heading text-4xl font-bold tracking-tight">
+                    Course Syllabus
+                </h2>
+                <p class="text-slate-400 mt-4 text-lg">
+                    From zero to production-grade Go. Every lesson has
+                    runnable code.
                 </p>
             </div>
 
@@ -410,12 +470,8 @@
                 </a>
                 {{end}}
             </div>
-
-
         </div>
     </section>
-
-
 
     <!-- Footer -->
     <footer class="border-t border-white/5 py-10">
@@ -436,7 +492,6 @@
             </div>
         </div>
     </footer>
-
 </body>
 
 </html>

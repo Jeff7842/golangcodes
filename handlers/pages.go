@@ -10,7 +10,9 @@ import (
 	"strings"
 
 	"github.com/yuin/goldmark"
+	meta "github.com/yuin/goldmark-meta"
 	"github.com/yuin/goldmark/extension"
+	"github.com/yuin/goldmark/parser"
 )
 
 func slugify(s string) string {
@@ -18,9 +20,10 @@ func slugify(s string) string {
 }
 
 type Resource struct {
-	Title   string
-	Path    string
-	Content template.HTML
+	Title        string
+	Path         string
+	Content      template.HTML
+	QualityScore int
 }
 
 type PageData struct {
@@ -80,8 +83,9 @@ func getResources() []Resource {
 	for _, expectedTitle := range linearOrder {
 		if _, exists := entryMap[expectedTitle]; exists {
 			resources = append(resources, Resource{
-				Title: expectedTitle,
-				Path:  "/go/" + slugify(expectedTitle),
+				Title:        expectedTitle,
+				Path:         "/go/" + slugify(expectedTitle),
+				QualityScore: 10,
 			})
 			// Remove so we know what's left
 			delete(entryMap, expectedTitle)
@@ -91,8 +95,9 @@ func getResources() []Resource {
 	// Append any remaining items (just in case they weren't in the list)
 	for title := range entryMap {
 		resources = append(resources, Resource{
-			Title: title,
-			Path:  "/go/" + slugify(title),
+			Title:        title,
+			Path:         "/go/" + slugify(title),
+			QualityScore: 10,
 		})
 	}
 
@@ -172,17 +177,28 @@ func ResourceHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Convert Markdown to HTML
+	// Convert Markdown to HTML and extract meta
 	var htmlBuf bytes.Buffer
+	context := parser.NewContext()
 	md := goldmark.New(
 		goldmark.WithExtensions(
 			extension.Table,
 			extension.Linkify,
+			meta.Meta,
 		),
 	)
-	if err := md.Convert(contentBytes, &htmlBuf); err != nil {
+	if err := md.Convert(contentBytes, &htmlBuf, parser.WithContext(context)); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	metaData := meta.Get(context)
+	if metaData != nil {
+		if scoreRaw, ok := metaData["score"]; ok {
+			if scoreData, ok := scoreRaw.(int); ok {
+				activeResource.QualityScore = scoreData
+			}
+		}
 	}
 
 	content := htmlBuf.String()

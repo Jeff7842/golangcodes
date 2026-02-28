@@ -33,9 +33,10 @@
         content="Learn Go interactively with a built-in code editor, 24+ lessons, gamified XP tracking, and community-driven content." />
     <meta name="twitter:image" content="https://golang.codes/static/golangcodeslogo.jpeg" />
 
-    <!-- Favicon -->
+    <!-- Favicon & PWA -->
     <link rel="icon" type="image/jpeg" href="/static/golangcodeslogo.jpeg" />
     <link rel="apple-touch-icon" href="/static/golangcodeslogo.jpeg" />
+    <link rel="manifest" href="/static/manifest.json" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -847,6 +848,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.nls.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.js"></script>
     <script src="/static/main.js"></script>
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    }, err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
 </body>
 
 </html>

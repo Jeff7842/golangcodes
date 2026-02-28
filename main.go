@@ -9,6 +9,9 @@ import (
 )
 
 func main() {
+	// Initialize Embedded Memory Ratings Store
+	handlers.InitRatings()
+
 	// Static files (Monaco editor JS, CSS)
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
@@ -16,6 +19,7 @@ func main() {
 	// Routes
 	http.HandleFunc("/", handlers.HomeHandler)
 	http.HandleFunc("/api/run", handlers.RunHandler)
+	http.HandleFunc("/api/rate", handlers.RateHandler)
 	http.HandleFunc("/go/", handlers.ResourceHandler)
 
 	port := os.Getenv("PORT")

@@ -12,7 +12,7 @@ func main() {
 	// Initialize Embedded Memory Ratings Store
 	handlers.InitRatings()
 
-	// Static files (Monaco editor JS, CSS)
+	// Static files (Monaco editor JS, CSS, PDFs)
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 

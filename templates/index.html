@@ -4,48 +4,21 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{if .ActiveResource}}{{.ActiveResource.Title}} — {{end}}Golang Codes - Learn Go Interactively</title>
+    <title>Interactive PDF Reader — Golang Codes</title>
 
     <!-- SEO Meta Tags -->
     <meta name="description"
-        content="Learn Go (Golang) interactively with a built-in code editor, 24+ lessons from basics to advanced, gamified progress tracking, and community-driven content. Free and open-source." />
-    <meta name="keywords"
-        content="Go, Golang, learn Go, Go tutorial, Go programming, interactive coding, Go course, Go lessons, Go examples, systems programming" />
-    <meta name="author" content="Golang Codes" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://golang.codes{{if .ActiveResource}}{{.ActiveResource.Path}}{{end}}" />
+        content="Learn Go interactively with a PDF-based reader, integrated code editor, and note-taking workspace." />
     <meta name="theme-color" content="#00ADD8" />
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://golang.codes{{if .ActiveResource}}{{.ActiveResource.Path}}{{end}}" />
-    <meta property="og:title" content="{{if .ActiveResource}}{{.ActiveResource.Title}} — {{end}}Golang Codes" />
-    <meta property="og:description"
-        content="Learn Go interactively with a built-in code editor, 24+ lessons, gamified XP tracking, and community-driven content. Free and open-source." />
-    <meta property="og:image" content="https://golang.codes/static/golangcodeslogo.jpeg" />
-    <meta property="og:site_name" content="Golang Codes" />
-    <meta property="og:locale" content="en_US" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="{{if .ActiveResource}}{{.ActiveResource.Title}} — {{end}}Golang Codes" />
-    <meta name="twitter:description"
-        content="Learn Go interactively with a built-in code editor, 24+ lessons, gamified XP tracking, and community-driven content." />
-    <meta name="twitter:image" content="https://golang.codes/static/golangcodeslogo.jpeg" />
-
-    <!-- Favicon & PWA -->
-    <link rel="icon" type="image/jpeg" href="/static/golangcodeslogo.jpeg" />
-    <link rel="apple-touch-icon" href="/static/golangcodeslogo.jpeg" />
-    <link rel="manifest" href="/static/manifest.json" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet" />
 
-    <!-- Tailwind CSS with custom font config -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -55,6 +28,7 @@
                     fontFamily: {
                         sans: ["Inter", "sans-serif"],
                         heading: ["Plus Jakarta Sans", "sans-serif"],
+                        mono: ["JetBrains Mono", "monospace"],
                     },
                     colors: {
                         goblue: {
@@ -69,33 +43,26 @@
         };
     </script>
 
-    <!-- HTMX -->
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-
-    <!-- Prevent flash of wrong theme -->
-    <script>
-        if (
-            localStorage.getItem("theme") === "dark" ||
-            (!localStorage.getItem("theme") &&
-                window.matchMedia("(prefers-color-scheme: dark)").matches)
-        ) {
-            document.documentElement.classList.add("dark");
-        } else {
-            document.documentElement.classList.remove("dark");
-        }
-    </script>
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="/static/idb-store.js"></script>
 
     <!-- Monaco Editor CSS -->
     <link rel="stylesheet" data-name="vs/editor/editor.main"
         href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.min.css" />
 
-    <!-- PrismJS Syntax Highlighting -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
-        /* Custom scrollbar for better appearance */
+        .pdf-page-wrapper {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+            background: white;
+            position: relative;
+        }
+
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
 
         ::-webkit-scrollbar-track {
@@ -104,797 +71,967 @@
 
         ::-webkit-scrollbar-thumb {
             background: #cbd5e1;
-            border-radius: 4px;
-            border: 2px solid transparent;
-            background-clip: padding-box;
+            border-radius: 3px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-            border: 2px solid transparent;
-            background-clip: padding-box;
-        }
-
-        /* Dark mode scrollbar */
         .dark ::-webkit-scrollbar-thumb {
             background: #475569;
         }
 
-        .dark ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
-
-        /* Premium Typography Styles */
-        .resource-content h1 {
-            font-family: "Plus Jakarta Sans", sans-serif;
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 1.25rem;
-            color: #0f172a;
-            letter-spacing: -0.025em;
-            line-height: 1.2;
-            transition: color 0.2s;
-        }
-
-        .resource-content h2 {
-            font-family: "Plus Jakarta Sans", sans-serif;
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            color: #1e293b;
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 0.5rem;
-            letter-spacing: -0.025em;
-            transition:
-                color 0.2s,
-                border-color 0.2s;
-        }
-
-        .resource-content h3 {
-            font-family: "Plus Jakarta Sans", sans-serif;
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-            color: #334155;
-            transition: color 0.2s;
-        }
-
-        .resource-content p {
-            font-family: "Inter", sans-serif;
-            margin-bottom: 1.25rem;
-            line-height: 1.8;
-            color: #475569;
-            font-size: 1.0625rem;
-            transition: color 0.2s;
-        }
-
-        .resource-content strong {
-            color: #1e293b;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-
-        /* Prism overrides for Notion structure */
-        .resource-content pre[class*="language-"] {
-            margin-bottom: 1.75rem;
-            border-radius: 0.75rem;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s ease;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
-        }
-
-        .resource-content pre[class*="language-"]:hover {
-            opacity: 0.95;
-            transform: translateY(-1px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            border-color: #cbd5e1;
-        }
-
-        .resource-content pre[class*="language-"]::after {
-            content: "Click to edit →";
-            position: absolute;
-            top: 0.75rem;
-            right: 1rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #94a3b8;
-            opacity: 0;
-            transition: opacity 0.2s;
-            font-family: "Inter", sans-serif;
-        }
-
-        .resource-content pre[class*="language-"]:hover::after {
-            opacity: 1;
-            color: #f8fafc;
-        }
-
-        .resource-content code {
-            font-family:
-                ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-                "Liberation Mono", "Courier New", monospace;
-            color: #0ea5e9;
-            background-color: #f0f9ff;
-            padding: 0.2rem 0.375rem;
-            border-radius: 0.375rem;
-            font-size: 0.875em;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .resource-content pre code {
-            background-color: transparent;
-            padding: 0;
-            color: inherit;
-            font-size: 0.875rem;
-            font-weight: normal;
-        }
-
-        .resource-content ul {
-            list-style-type: none;
-            margin-left: 0;
-            margin-bottom: 1.5rem;
-            color: #475569;
-            padding-left: 1.5rem;
-            transition: color 0.2s;
-        }
-
-        .resource-content ul>li {
-            position: relative;
-            margin-bottom: 0.5rem;
-            line-height: 1.7;
-            font-size: 1.0625rem;
-        }
-
-        .resource-content ul>li::before {
-            content: "•";
-            color: #0ea5e9;
-            font-weight: bold;
-            position: absolute;
-            left: -1.25rem;
-            font-size: 1.2em;
-            top: -0.1em;
-            transition: color 0.2s;
-        }
-
-        .resource-content ol {
-            padding-left: 1.5rem;
-            margin-bottom: 1.5rem;
-            transition: color 0.2s;
-        }
-
-        .resource-content ol>li {
-            margin-bottom: 0.5rem;
-            line-height: 1.7;
-            font-size: 1.0625rem;
-            color: #475569;
-            transition: color 0.2s;
-        }
-
-        .resource-content a {
-            color: #0284c7;
-            text-decoration: underline;
-            text-decoration-color: #bae6fd;
-            text-underline-offset: 4px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .resource-content a:hover {
-            color: #0369a1;
-            text-decoration-color: #0284c7;
-        }
-
-        /* Video wrapper styling */
-        .resource-content iframe {
-            border-radius: 0.75rem;
-            box-shadow:
-                0 10px 15px -3px rgb(0 0 0 / 0.1),
-                0 4px 6px -4px rgb(0 0 0 / 0.1);
-            margin: 2rem 0;
-            border: 1px solid #f1f5f9;
-            transition: border-color 0.2s;
-        }
-
         body {
-            background-color: #f8fafc;
-            transition:
-                background-color 0.2s,
-                color 0.2s;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        /* Dark Mode Overrides */
-        .dark body {
-            background-color: #0f172a;
+        #pdf-canvas-container {
+            background-color: #525659;
+            overflow: auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
         }
 
-        .dark .resource-content h1 {
-            color: #f8fafc;
+        .highlight-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
         }
 
-        .dark .resource-content h2 {
-            color: #e2e8f0;
-            border-color: #1e293b;
+        .highlight {
+            position: absolute;
+            background-color: rgba(255, 255, 0, 0.4);
+            mix-blend-mode: multiply;
         }
 
-        .dark .resource-content h3 {
-            color: #cbd5e1;
+        #editor {
+            min-height: 200px;
         }
 
-        .dark .resource-content p {
-            color: #94a3b8;
+        .pane-divider-v {
+            width: 4px;
+            cursor: col-resize;
+            background: #e2e8f0;
+            transition: background 0.2s;
         }
 
-        .dark .resource-content strong {
-            color: #f1f5f9;
+        .dark .pane-divider-v {
+            background: #1e293b;
         }
 
-        .dark .resource-content pre[class*="language-"] {
+        .pane-divider-v:hover {
+            background: #3b82f6;
+        }
+
+        .pane-divider-h {
+            height: 4px;
+            cursor: row-resize;
+            background: #e2e8f0;
+            transition: background 0.2s;
+        }
+
+        .dark .pane-divider-h {
+            background: #1e293b;
+        }
+
+        .pane-divider-h:hover {
+            background: #3b82f6;
+        }
+
+        .notes-textarea {
+            background-image: repeating-linear-gradient(transparent, transparent 31px, #e2e8f0 31px, #e2e8f0 32px);
+            line-height: 32px;
+            padding: 8px 16px;
+        }
+
+        .dark .notes-textarea {
+            background-image: repeating-linear-gradient(transparent, transparent 31px, #334155 31px, #334155 32px);
+        }
+
+        /* PDF.js Text Layer */
+        .textLayer {
+            position: absolute;
+            text-align: initial;
+            inset: 0;
+            overflow: hidden;
+            opacity: 0.2;
+            line-height: 1;
+            text-rendering: optimizeLegibility;
+        }
+
+        .textLayer span {
+            color: transparent;
+            position: absolute;
+            white-space: pre;
+            cursor: text;
+            transform-origin: 0% 0%;
+        }
+
+        #text-selection-toolbar {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 4px;
+        }
+
+        .dark #text-selection-toolbar {
+            background: #1e293b;
             border-color: #334155;
-            box-shadow: none;
-            background-color: #020617 !important;
-        }
-
-        .dark .resource-content pre[class*="language-"]:hover {
-            border-color: #475569;
-        }
-
-        .dark .resource-content code {
-            color: #38bdf8;
-            background-color: #1e293b;
-        }
-
-        .dark .resource-content pre code {
-            background-color: transparent;
-            color: inherit;
-        }
-
-        .dark .resource-content ul,
-        .dark .resource-content ol {
-            color: #94a3b8;
-        }
-
-        .dark .resource-content ul>li::before {
-            color: #38bdf8;
-        }
-
-        .dark .resource-content a {
-            color: #38bdf8;
-            text-decoration-color: #0369a1;
-        }
-
-        .dark .resource-content a:hover {
-            color: #7dd3fc;
-            text-decoration-color: #38bdf8;
-        }
-
-        .dark .resource-content iframe {
-            border-color: #1e293b;
         }
     </style>
+
+    <script>
+        if (localStorage.getItem("theme") === "dark" || (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+            document.documentElement.classList.add("dark");
+        }
+    </script>
 </head>
 
 <body
-    class="text-slate-800 dark:text-slate-200 min-h-screen md:h-screen flex flex-col md:flex-row overflow-x-hidden md:overflow-hidden font-sans antialiased bg-slate-50 dark:bg-slate-900 selection:bg-goblue-100 dark:selection:bg-goblue-900 selection:text-goblue-600 dark:selection:text-goblue-100 transition-colors duration-200">
-    <!-- Sidebar: Resources List (20%) -->
-    <aside
-        class="w-full md:w-64 xl:w-72 bg-slate-50 dark:bg-slate-900 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 flex flex-col h-auto md:h-full shadow-sm z-10 shrink-0 transition-colors duration-200">
-        <div
-            class="p-6 border-b border-slate-200 dark:border-slate-800 flex flex-col items-center gap-4 bg-white dark:bg-slate-900 transition-colors duration-200">
-            <img src="/static/golangcodeslogo.jpeg" alt="Golang Codes Logo"
-                class="w-full h-auto object-contain max-h-16 mix-blend-multiply dark:mix-blend-screen dark:invert opacity-90 transition-all" />
+    class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 flex flex-col h-screen font-sans antialiased">
 
-            <div class="flex items-center justify-between w-full px-1">
-                <div class="flex items-center gap-1.5 text-slate-700 dark:text-slate-200 cursor-help"
-                    title="Experience Points - Earn by reading and running code!">
-                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                        </path>
-                    </svg>
-                    <span id="user-score" class="font-bold text-sm tracking-wide">0 XP</span>
-                </div>
+    <!-- Floating Text Selection Toolbar -->
+    <div id="text-selection-toolbar" class="flex items-center gap-1">
+        <button onclick="highlightSelection()"
+            class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-xs font-bold flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+            Highlight
+        </button>
+        <div class="w-px h-4 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+        <button onclick="extractSelectionToEditor()"
+            class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-xs font-bold flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+            Extract Code
+        </button>
+    </div>
 
-                <button id="theme-toggle"
-                    class="text-sm flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
-                    <svg id="theme-toggle-dark-icon" class="hidden w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+    <!-- Header -->
+    <header
+        class="h-14 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between px-6 z-30 shrink-0">
+        <div class="flex items-center gap-4">
+            <img src="/static/golangcodeslogo.jpeg" alt="Logo" class="h-8 dark:invert opacity-90" />
+            <h1 class="text-sm font-bold tracking-tight hidden sm:block">Interactive Reader</h1>
+            <div class="h-4 w-px bg-slate-200 dark:bg-slate-700"></div>
+            <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                <span id="pdf-name">Loading...</span>
+                <span id="page-info" class="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">Page 0 / 0</span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <div id="user-score"
+                class="text-xs font-bold bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-500 px-3 py-1 rounded-full border border-yellow-200 dark:border-yellow-700/50">
+                0 XP</div>
+
+            <div class="flex items-center gap-1">
+                <button id="zoom-out"
+                    class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors">
+                    <svg class="w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                     </svg>
-                    <svg id="theme-toggle-light-icon" class="hidden w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                            fill-rule="evenodd" clip-rule="evenodd"></path>
+                </button>
+                <span id="zoom-level" class="text-xs font-mono w-12 text-center">100%</span>
+                <button id="zoom-in" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors">
+                    <svg class="w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
                 </button>
             </div>
-        </div>
-        <div class="flex-1 overflow-y-auto p-4 space-y-1">
-            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">
-                Learning Resources
-            </h2>
-            {{range .Resources}}
-            <a href="{{.Path}}"
-                class="block px-3 py-2 rounded-lg hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm hover:text-slate-900 dark:hover:text-slate-100 transition-all {{if $.ActiveResource}}{{if eq $.ActiveResource.Path .Path}}bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm font-semibold border-l-4 border-[#5fbceb]{{else}}text-slate-600 dark:text-slate-400{{end}}{{else}}text-slate-600 dark:text-slate-400{{end}}">
-                {{.Title}}
-            </a>
-            {{else}}
-            <p class="text-sm text-slate-500 dark:text-slate-500">
-                No resources found.
-            </p>
-            {{end}}
-        </div>
-        <!-- Support Us -->
-        <div class="p-4 border-t border-slate-200 dark:border-slate-800">
-            <a href="https://buymeacoffee.com/hersi" target="_blank"
-                class="flex items-center gap-3 px-4 py-3 rounded-xl bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-900/50 hover:border-pink-300 dark:hover:border-pink-800 transition-all group">
-                <span class="text-pink-500 text-lg">♥</span>
-                <div>
-                    <div
-                        class="text-sm font-semibold text-pink-600 dark:text-pink-400 group-hover:text-pink-700 dark:group-hover:text-pink-300 transition-colors">
-                        Support Us</div>
-                    <div class="text-xs text-slate-500 dark:text-slate-500">Help keep this project free</div>
-                </div>
-            </a>
-        </div>
-    </aside>
 
-    <!-- Main Content: Reading Material (40%) -->
-    <main
-        class="flex-1 min-w-0 bg-white dark:bg-[#0f172a] border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 flex flex-col h-auto md:h-full overflow-y-auto shadow-inner relative transition-colors duration-200">
-
-        <!-- Toggle Header -->
-        <div
-            class="sticky top-0 z-30 bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 py-3 flex items-center justify-between shadow-sm">
-            <button id="toggle-sidebar-btn"
-                class="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium text-sm bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7">
-                    </path>
+            <button id="theme-toggle"
+                class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+                <svg id="theme-icon" class="w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                 </svg>
-                <span id="toggle-sidebar-text">Hide Nav</span>
             </button>
-            <span class="text-xs font-semibold text-slate-400 uppercase tracking-widest hidden sm:inline-block">Reading
-                Area</span>
-        </div>
 
-        {{if .ActiveResource}}
-        <article class="p-8 lg:p-12 max-w-4xl mx-auto w-full resource-content pb-12">
-            {{.ActiveResource.Content}}
-
-            <!-- Page Quality & Improvement -->
-            <div
-                class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row gap-4 justify-between items-center bg-slate-50/50 dark:bg-slate-900/50 p-6 rounded-2xl">
-                <div id="quality-score-container" data-slug="{{.ActiveResource.Title}}" class="flex items-center gap-3">
-                    <div
-                        class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z">
-                            </path>
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-semibold text-slate-800 dark:text-slate-200">Quality Score: <span
-                                    id="score-percentage"
-                                    class="text-blue-600 dark:text-blue-400 font-bold transition-all duration-300">{{.ActiveResource.QualityScore}}%</span></span>
-                            <span id="vote-count"
-                                class="text-xs text-slate-500 font-medium">({{.ActiveResource.TotalVotes}}
-                                ratings)</span>
-                        </div>
-                        <div class="flex items-center gap-1 mt-1 text-slate-300 dark:text-slate-600" id="star-rating">
-                            <button data-score="1"
-                                class="hover:text-yellow-400 transition-colors focus:outline-none"><svg
-                                    class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                    <path
-                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                </svg></button>
-                            <button data-score="2"
-                                class="hover:text-yellow-400 transition-colors focus:outline-none"><svg
-                                    class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                    <path
-                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                </svg></button>
-                            <button data-score="3"
-                                class="hover:text-yellow-400 transition-colors focus:outline-none"><svg
-                                    class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                    <path
-                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                </svg></button>
-                            <button data-score="4"
-                                class="hover:text-yellow-400 transition-colors focus:outline-none"><svg
-                                    class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                    <path
-                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                </svg></button>
-                            <button data-score="5"
-                                class="hover:text-yellow-400 transition-colors focus:outline-none"><svg
-                                    class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                    <path
-                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                </svg></button>
-                            <span class="text-[10px] ml-1 uppercase tracking-wider">Rate</span>
-                        </div>
-                    </div>
-                </div>
-                <a href="https://github.com/Golangcodes/golangcodes/tree/main/Go/{{.ActiveResource.Title}}.md"
-                    target="_blank"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all text-sm font-medium shadow-sm hover:shadow">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                    </svg>
-                    Help Improve This Page
-                </a>
-            </div>
-
-            <!-- Page Navigation -->
-            <div
-                class="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row gap-4 justify-between items-center transition-colors duration-200">
-                <div class="flex-1 text-left w-full sm:w-auto">
-                    {{if .PrevResource}}
-                    <a href="{{.PrevResource.Path}}"
-                        class="inline-flex items-center gap-2 text-[#5fbceb] hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm font-medium p-2 -ml-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
-                            </path>
-                        </svg>
-                        <span class="flex flex-col">
-                            <span class="text-xs text-slate-500 dark:text-slate-400 font-normal">Previous</span>
-                            <span>{{.PrevResource.Title}}</span>
-                        </span>
-                    </a>
-                    {{end}}
-                </div>
-
-                <div class="flex-1 text-right w-full sm:w-auto flex justify-end">
-                    {{if .NextResource}}
-                    <a href="{{.NextResource.Path}}"
-                        class="inline-flex items-center gap-2 text-[#5fbceb] hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm font-medium p-2 -mr-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">
-                        <span class="flex flex-col text-right">
-                            <span class="text-xs text-slate-500 dark:text-slate-400 font-normal">Next</span>
-                            <span>{{.NextResource.Title}}</span>
-                        </span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                            </path>
-                        </svg>
-                    </a>
-                    {{end}}
-                </div>
-            </div>
-
-
-        </article>
-
-        <img src="/static/gopher.webp"
-            class="fixed bottom-4 right-[42%] w-16 h-16 opacity-10 pointer-events-none mix-blend-multiply" alt="" />
-        {{else}}
-        <div
-            class="flex-1 flex flex-col items-center justify-center text-center p-8 bg-slate-50/50 dark:bg-slate-900/50 transition-colors duration-200">
-            <img src="/static/gopher.webp" alt="Gopher"
-                class="w-24 h-24 mb-6 opacity-30 mix-blend-multiply dark:invert dark:opacity-20 grayscale transition-all" />
-            <h2 class="text-3xl font-bold text-slate-700 dark:text-slate-200 mb-3 transition-colors duration-200">
-                Welcome to Golang Codes
-            </h2>
-            <p class="text-lg text-slate-500 dark:text-slate-400 max-w-sm mb-6 transition-colors duration-200">
-                Select a topic from the sidebar to dive into Go programming.
-            </p>
-
-            <a id="resume-btn" href="#"
-                class="hidden inline-flex items-center gap-2 bg-[#5fbceb] hover:bg-blue-500 text-white dark:text-slate-900 font-semibold py-2.5 px-6 rounded-full shadow hover:shadow-lg transition-all transform hover:-translate-y-0.5">
-                Resume Learning
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3">
-                    </path>
+            <button id="bookmark-page-btn"
+                class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.54 1.118l-3.976-2.888a1 1 0 00-1.175 0l-3.976 2.888c-.784.57-1.838-.196-1.539-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                 </svg>
-            </a>
-
-            <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                    const lastPage = localStorage.getItem('lastVisitedPage');
-                    if (lastPage) {
-                        const btn = document.getElementById('resume-btn');
-                        if (btn) {
-                            btn.href = lastPage;
-                            btn.classList.remove('hidden');
-                        }
-                    }
-                });
-            </script>
+            </button>
         </div>
-        {{end}}
-    </main>
+    </header>
 
-    <!-- Right Pane: Editor & Output (40%) -->
-    <section
-        class="w-full md:w-[45%] lg:w-[40%] xl:w-[45%] shrink-0 bg-white dark:bg-slate-900 flex flex-col h-[700px] md:h-full relative shadow-lg z-20 border-b md:border-b-0 md:border-l border-slate-200 dark:border-slate-800 transition-colors duration-200">
-        <!-- Action Bar -->
-        <div
-            class="h-14 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 bg-slate-50 dark:bg-[#0d1117] shrink-0 transition-colors duration-200">
-            <div class="flex items-center gap-3">
-                <div
-                    class="flex space-x-1.5 shadow-sm bg-white dark:bg-slate-800 p-1.5 rounded-md border border-slate-200 dark:border-slate-700 transition-colors duration-200">
-                    <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
-                    <div class="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
-                    <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+    <div class="flex-1 flex overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar"
+            class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col shrink-0 transition-all duration-300">
+            <div class="flex-1 overflow-y-auto">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-800">
+                    <label
+                        class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Bookmarks</label>
+                    <div id="pdf-bookmarks" class="space-y-1 text-sm mb-4">
+                        <p class="text-slate-400 italic text-xs px-2">No bookmarks</p>
+                    </div>
+
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">My
+                        Library</label>
+                    <div id="pdf-library" class="space-y-1 text-sm mb-4 max-h-32 overflow-y-auto">
+                        <p class="text-slate-400 italic text-xs px-2">Library empty</p>
+                    </div>
+
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Course
+                        Content</label>
+                    <div id="pdf-outline" class="space-y-1 text-sm">
+                        <!-- Outline populated by JS -->
+                        <p class="text-slate-400 italic text-xs px-2">No outline found</p>
+                    </div>
                 </div>
-                <span
-                    class="text-sm font-semibold text-slate-600 dark:text-slate-400 transition-colors duration-200">main.go</span>
             </div>
-            <div class="flex items-center gap-3">
-                <button id="reset-btn"
-                    class="hidden bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2 transition-all shadow-sm focus:outline-none"
-                    title="Reset to original lesson code">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                        </path>
-                    </svg>
-                    Reset Code
-                </button>
-                <button id="run-btn"
-                    class="bg-[#1e293b] hover:bg-slate-900 dark:bg-blue-600 dark:hover:bg-blue-500 text-white px-5 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2 transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-slate-900"
-                    hx-post="/api/run" hx-target="#output" hx-indicator="#loading" hx-include="#code-input">
-                    <svg class="w-4 h-4 text-[#5fbceb]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z">
-                        </path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Run Code
-                </button>
+
+            <div class="mt-auto p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/20">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Source
+                    PDF</label>
+                <div class="flex flex-col gap-2">
+                    <button id="upload-btn"
+                        class="flex items-center gap-2 w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold hover:border-blue-500 transition-all">
+                        <svg class="w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        Change PDF
+                    </button>
+                    <input type="file" id="pdf-upload" class="hidden" accept="application/pdf" />
+                    <p class="text-[9px] text-slate-500 leading-tight">Load your own PDF to learn with these tools.</p>
+                </div>
             </div>
-        </div>
+        </aside>
 
-        <!-- Editor Container -->
-        <div id="editor" class="flex-1 min-h-[50%] min-w-0"></div>
-
-        <!-- Hidden input to hold editor content for HTMX submission -->
-        <form id="code-form" class="hidden">
-            <textarea id="code-input" name="code"></textarea>
-        </form>
-
-        <!-- Divider -->
-        <div
-            class="h-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 border-y border-slate-200 dark:border-slate-800 cursor-row-resize shrink-0 flex items-center justify-center transition-colors duration-200">
-            <div class="w-12 h-1 bg-slate-300 dark:bg-slate-600 rounded-full transition-colors duration-200"></div>
-        </div>
-
-        <!-- Output Container -->
-        <div
-            class="h-[40%] bg-slate-50 dark:bg-[#0d1117] flex flex-col shrink-0 relative min-w-0 transition-colors duration-200">
+        <!-- PDF Pane -->
+        <main class="flex-1 flex flex-col bg-[#525659] relative overflow-hidden">
+            <!-- PDF Tools -->
             <div
-                class="h-10 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 bg-white dark:bg-slate-900 transition-colors duration-200">
-                <span
-                    class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                        </path>
-                    </svg>
-                    Terminal
-                </span>
-                <!-- Loading indicator -->
-                <div id="loading"
-                    class="htmx-indicator ml-auto flex items-center gap-2 text-blue-500 text-xs font-medium">
-                    <svg class="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path class="opacity-75" fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                        </path>
-                    </svg>
-                    Compiling & Running...
+                class="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white dark:bg-slate-900 p-1 rounded-full shadow-lg border border-slate-200 dark:border-slate-800 z-20">
+                <button id="prev-page-btn"
+                    class="p-1 px-3 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-xs font-bold transition-colors uppercase">Prev</button>
+                <div class="w-px h-4 bg-slate-200 dark:bg-slate-800"></div>
+                <button id="next-page-btn"
+                    class="p-1 px-3 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-xs font-bold transition-colors uppercase">Next</button>
+            </div>
+            <div id="pdf-canvas-container">
+                <!-- Pages dynamic -->
+            </div>
+        </main>
+
+        <div class="pane-divider-v" id="resize-v"></div>
+
+        <!-- Workspace Pane -->
+        <div id="workspace" class="w-[450px] flex flex-col bg-white dark:bg-slate-900 shrink-0 overflow-hidden">
+            <!-- Notes -->
+            <div id="notes-container" class="flex-1 flex flex-col overflow-hidden">
+                <div
+                    class="h-12 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 bg-slate-50 dark:bg-slate-950/20 shrink-0">
+                    <span
+                        class="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                        <svg class="w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Notebook
+                    </span>
+                    <div class="flex items-center gap-2">
+                        <span id="notes-status"
+                            class="text-[9px] text-slate-400 bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded"
+                            title="Notes are saved locally on your device">Saved locally</span>
+                    </div>
+                </div>
+                <textarea id="notes-ta"
+                    class="flex-1 w-full notes-textarea border-none focus:ring-0 resize-none text-sm dark:text-slate-300 dark:bg-slate-900"
+                    placeholder="Type your notes here as you read..."></textarea>
+            </div>
+
+            <div class="pane-divider-h" id="resize-h"></div>
+
+            <!-- Editor -->
+            <div id="editor-container" class="h-[45%] flex flex-col overflow-hidden">
+                <div
+                    class="h-12 border-y border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 bg-slate-50 dark:bg-slate-950/20 shrink-0">
+                    <span
+                        class="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                        <svg class="w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                        Scratchpad (main.go)
+                    </span>
+                    <div class="flex items-center gap-2">
+                        <button id="export-pdf-btn"
+                            class="bg-slate-700 hover:bg-slate-600 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Export
+                        </button>
+                    </div>
+                    <button id="run-btn"
+                        class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded transition-all uppercase flex items-center gap-1.5"
+                        hx-post="/api/run" hx-target="#output" hx-indicator="#loading" hx-include="#code-input">
+                        ▶ Run
+                    </button>
+                </div>
+                <div id="editor" class="flex-1"></div>
+                <form id="code-form" class="hidden"><textarea id="code-input" name="code"></textarea></form>
+
+                <!-- Output -->
+                <div
+                    class="h-1/3 border-t border-slate-200 dark:border-slate-800 bg-slate-950 flex flex-col overflow-hidden shrink-0">
+                    <div id="loading"
+                        class="htmx-indicator fixed inset-0 bg-slate-950/50 flex items-center justify-center z-50 text-[10px] font-bold text-blue-400"
+                        style="display:none">Compiling...</div>
+                    <div id="output"
+                        class="flex-1 p-3 font-mono text-[11px] text-green-500 overflow-auto whitespace-pre-wrap">Ready.
+                        Write code above and hit Run.</div>
                 </div>
             </div>
-            <div class="flex-1 overflow-y-auto p-5 font-mono text-sm shadow-inner overflow-x-auto text-slate-800 dark:text-slate-300"
-                id="output">
-                <span class="text-slate-500 dark:text-slate-400 italic">Ready. Press 'Run Code' to execute.</span>
-            </div>
         </div>
-    </section>
+    </div>
 
-    <!-- PrismJS for Syntax Highlighting -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
-    <!-- Storage API (must load before main.js and inline scripts) -->
-    <script src="/static/storage.js"></script>
-
-    <!-- Custom logic for click-to-editor -->
+    <!-- Monaco Support -->
     <script>
-        // Run immediately — DOM is already loaded since this script is at the bottom of the body.
-        (function () {
-            // Theme Toggle Logic (wrapped in try-catch so code block binding always works)
-            try {
-                const themeToggleBtn = document.getElementById("theme-toggle");
-                const darkIcon = document.getElementById("theme-toggle-dark-icon");
-                const lightIcon = document.getElementById("theme-toggle-light-icon");
-                const themeText = document.getElementById("theme-toggle-text");
-
-                function updateThemeUI(isDark) {
-                    if (isDark) {
-                        if (lightIcon) lightIcon.classList.remove("hidden");
-                        if (darkIcon) darkIcon.classList.add("hidden");
-                        if (themeText) themeText.textContent = "Light Mode";
-                        if (window.editor && window.monaco) monaco.editor.setTheme("vs-dark");
-                    } else {
-                        if (darkIcon) darkIcon.classList.remove("hidden");
-                        if (lightIcon) lightIcon.classList.add("hidden");
-                        if (themeText) themeText.textContent = "Dark Mode";
-                        if (window.editor && window.monaco) monaco.editor.setTheme("vs");
-                    }
-                }
-
-                const checkMonaco = setInterval(() => {
-                    if (window.editor && window.monaco) {
-                        updateThemeUI(document.documentElement.classList.contains("dark"));
-                        clearInterval(checkMonaco);
-                    }
-                }, 100);
-
-                if (themeToggleBtn) {
-                    themeToggleBtn.addEventListener("click", () => {
-                        const isDark = document.documentElement.classList.toggle("dark");
-                        if (window.StorageAPI) {
-                            window.StorageAPI.setTheme(isDark ? "dark" : "light");
-                        } else {
-                            localStorage.setItem("theme", isDark ? "dark" : "light");
-                        }
-                        updateThemeUI(isDark);
-                    });
-                }
-            } catch (e) {
-                console.warn("Theme toggle init error:", e);
-            }
-
-            function initializeCodeBlocks() {
-                // Apply click-to-edit for all code blocks
-                const codeBlocks = document.querySelectorAll('article pre');
-
-                codeBlocks.forEach((block, index) => {
-                    // Prevent duplicate bindings
-                    if (block.dataset.editorBound === "true") return;
-                    block.dataset.editorBound = "true";
-
-                    const codeNode = block.querySelector('code') || block;
-
-                    // Store the original snippet before parsing local storage overrides
-                    if (!block.dataset.originalCode) {
-                        block.dataset.originalCode = codeNode.textContent;
-                    }
-
-                    // 1. Load from local storage
-                    const currentPath = window.location.pathname;
-                    const savedSnippet = window.StorageAPI.getSnippet(currentPath, index);
-
-                    if (savedSnippet) {
-                        codeNode.textContent = savedSnippet;
-                        // Trigger PrismJS highlighting on it if Prism is available
-                        if (window.Prism) {
-                            Prism.highlightElement(codeNode);
-                        }
-                    }
-
-                    block.title = "Click to edit in the terminal";
-                    block.style.cursor = "pointer";
-
-                    block.addEventListener("click", function () {
-                        let code = codeNode.textContent;
-
-                        // Support importing plain code snippets without structure
-                        if (!code.includes("package main")) {
-                            code = `package main\n\nimport "fmt"\n\nfunc main() {\n\t// Auto-imported snippet\n\t${code.trim().replace(/\n/g, '\n\t')}\n}`;
-                        }
-
-                        if (window.editor) {
-                            window.currentEditingSnippetIndex = undefined; // prevent setValue from overwriting the previous snippet
-                            window.editor.setValue(code);
-                            window.currentEditingSnippetIndex = index; // track the active snippet
-
-                            const resetBtn = document.getElementById('reset-btn');
-                            if (resetBtn) {
-                                resetBtn.classList.remove('hidden');
-                                resetBtn.onclick = function () {
-                                    const originalCode = block.dataset.originalCode;
-                                    if (originalCode && window.editor) {
-                                        // Re-apply wrapper if it was applied initially
-                                        let resetCode = originalCode;
-                                        if (!resetCode.includes("package main")) {
-                                            resetCode = `package main\n\nimport "fmt"\n\nfunc main() {\n\t// Auto-imported snippet\n\t${resetCode.trim().replace(/\n/g, '\n\t')}\n}`;
-                                        }
-                                        window.editor.setValue(resetCode);
-                                        // The model change event will auto-save the restored code,
-                                        // but let's also ensure the snippet is removed from local storage
-                                        if (window.StorageAPI.removeSnippet) {
-                                            window.StorageAPI.removeSnippet(currentPath, index);
-                                        }
-                                    }
-                                };
-                            }
-
-                            // Visual feedback
-                            const originalBg = this.style.backgroundColor;
-                            this.style.backgroundColor = "#dbeafe"; // blue-100
-                            this.style.transition = "background-color 0.2s";
-
-                            setTimeout(() => {
-                                this.style.backgroundColor = originalBg;
-                            }, 300);
-                        }
-                    });
-                });
-            }
-
-            // Bind immediately for initial load
-            initializeCodeBlocks();
-
-            // Bind after HTMX content swaps (when a user clicks a sidebar link)
-            document.body.addEventListener('htmx:load', function () {
-                initializeCodeBlocks();
-            });
-        })();
-    </script>
-
-    <!-- Monaco Editor Scripts -->
-    <script>
-        // Sidebar Toggle Logic
-        document.addEventListener("DOMContentLoaded", () => {
-            const sidebarBtn = document.getElementById("toggle-sidebar-btn");
-            const sidebarText = document.getElementById("toggle-sidebar-text");
-            const sidebar = document.querySelector("aside");
-
-            if (sidebarBtn && sidebar) {
-                // Check local storage for initial state
-                const isNavHidden = localStorage.getItem("navHidden") === "true";
-                if (isNavHidden) {
-                    sidebar.classList.add("hidden");
-                    sidebarText.textContent = "Show Nav";
-                }
-
-                sidebarBtn.addEventListener("click", () => {
-                    const isHidden = sidebar.classList.toggle("hidden");
-                    localStorage.setItem("navHidden", isHidden);
-                    sidebarText.textContent = isHidden ? "Show Nav" : "Hide Nav";
-
-                    // Trigger Monaco editor resize since layout changed
-                    if (window.editor) {
-                        setTimeout(() => window.editor.layout(), 50);
-                    }
-                });
-            }
-        });
-
-        var require = {
-            paths: {
-                vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs",
-            },
-        };
+        var require = { paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs" } };
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.nls.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.js"></script>
-    <script src="/static/main.js"></script>
-    <!-- Service Worker Registration -->
+
+    <!-- App Logic -->
+    <script src="/static/storage.js"></script>
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/static/sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    }, err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
+        // PDF-Centric App Logic
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let pdfDoc = null;
+        let scale = 1.5;
+        let currentPDFHash = null;
+        let currentPage = 1;
+        const container = document.getElementById('pdf-canvas-container');
+        const toolbar = document.getElementById('text-selection-toolbar');
+
+        async function generateHash(input) {
+            if (input instanceof Blob) {
+                return `file_${input.name.replace(/[^a-zA-Z0-9]/g, '_')}_${input.size}`;
+            }
+            if (typeof input === 'string') {
+                if (input.startsWith('blob:')) return currentPDFHash;
+                return input.split('/').pop().replace(/[^a-zA-Z0-9]/g, '_');
+            }
+            return 'unknown_pdf';
+        }
+
+        async function loadPDF(param, forceHash = null) {
+            let url = null;
+            let blob = param instanceof Blob ? param : null;
+            let title = "External PDF";
+            let hash = forceHash;
+
+            if (blob) {
+                url = URL.createObjectURL(blob);
+                title = blob.name || "Uploaded PDF";
+                if (!hash) hash = await generateHash(blob);
+            } else if (typeof param === 'string') {
+                if (!param.includes('/') && !param.includes(':')) {
+                    // It's a hash from library
+                    hash = param;
+                    const doc = await window.ReaderDB.get('pdfs', hash);
+                    if (doc) {
+                        if (doc.blob) {
+                            url = URL.createObjectURL(doc.blob);
+                        } else {
+                            url = doc.path;
+                        }
+                        title = doc.title;
+                    }
+                } else {
+                    url = param;
+                    if (!hash) hash = await generateHash(url);
+                }
+            }
+
+            if (!url) {
+                console.error("Could not resolve PDF URL from", param);
+                return;
+            }
+
+            document.getElementById('pdf-name').textContent = "Loading...";
+            currentPDFHash = hash;
+
+            try {
+                if (!window.ReaderDB.db) await window.ReaderDB.init();
+
+                pdfDoc = await pdfjsLib.getDocument(url).promise;
+
+                // Auto-crop / Fit to width
+                const page1 = await pdfDoc.getPage(1);
+                const baseViewport = page1.getViewport({ scale: 1.0 });
+                const containerWidth = document.getElementById('pdf-canvas-container').clientWidth;
+                if (containerWidth > 100) {
+                    scale = (containerWidth - 40) / baseViewport.width;
+                }
+
+                if (url.includes('AnIntroduction')) title = "An Introduction to Programming in Go";
+                document.getElementById('pdf-name').textContent = title;
+
+                // Save to IndexedDB
+                const pdfData = {
+                    hash: currentPDFHash,
+                    title: title,
+                    path: url.startsWith('http') || url.startsWith('/') ? url : null,
+                    blob: blob,
+                    last_updated: Date.now()
+                };
+
+                // If we're loading from a hash, don't overwrite the blob if we don't have a new one
+                if (!blob && !url.startsWith('http') && !url.startsWith('/')) {
+                    const existing = await window.ReaderDB.get('pdfs', currentPDFHash);
+                    if (existing && existing.blob) pdfData.blob = existing.blob;
+                }
+
+                await window.ReaderDB.put('pdfs', pdfData);
+                await updateLibrarySidebar();
+
+                // Fetch notes/highlights/bookmarks from IndexedDB
+                const noteObj = await window.ReaderDB.get('notes', [currentPDFHash, 1]); // Global note
+                const highlights = await window.ReaderDB.getAllByIndex('highlights', 'pdf_hash', currentPDFHash);
+                const bookmarks = await window.ReaderDB.getAllByIndex('bookmarks', 'pdf_hash', currentPDFHash);
+
+                document.getElementById('page-info').textContent = `1 / ${pdfDoc.numPages}`;
+
+                // Apply notes and scratchpad code
+                document.getElementById('notes-ta').value = noteObj ? noteObj.content : '';
+
+                const scratchObj = await window.ReaderDB.get('notes', [currentPDFHash, 'scratchpad']);
+                if (window.editor) {
+                    window.editor.setValue(scratchObj && scratchObj.content.trim() !== '' ? scratchObj.content : 'package main\n\nimport "fmt"\n\nfunc main() {\n\t// Type your Go examples here and hit Run!\n\tfmt.Println("Hello, Go Reader!")\n}');
+                }
+
+                renderAllPages(highlights);
+                loadOutline();
+                updateBookmarksSidebar(bookmarks.map(x => x.page));
+            } catch (err) {
+                console.error("PDF Load Error:", err);
+                document.getElementById('pdf-name').textContent = "Error loading PDF";
+            }
+        }
+
+        async function renderAllPages(highlights = []) {
+            container.innerHTML = '';
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const pageNum = parseInt(entry.target.dataset.pageNumber);
+                        currentPage = pageNum;
+                        document.getElementById('page-info').textContent = `${pageNum} / ${pdfDoc.numPages}`;
+                        trackPage(pageNum);
+                        updateBookmarkIcon(pageNum);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            for (let i = 1; i <= pdfDoc.numPages; i++) {
+                const page = await pdfDoc.getPage(i);
+                const viewport = page.getViewport({ scale });
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'pdf-page-wrapper';
+                wrapper.id = `page-wrapper-${i}`;
+                wrapper.dataset.pageNumber = i;
+
+                const canvas = document.createElement('canvas');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                wrapper.appendChild(canvas);
+                observer.observe(wrapper);
+
+                const highlightLayer = document.createElement('div');
+                highlightLayer.className = 'highlight-layer';
+                highlightLayer.style.width = `${viewport.width}px`;
+                highlightLayer.style.height = `${viewport.height}px`;
+                wrapper.appendChild(highlightLayer);
+
+                // Add text layer for selection
+                const textLayer = document.createElement('div');
+                textLayer.className = 'textLayer'; // PDF.js default class
+                textLayer.style.width = `${viewport.width}px`;
+                textLayer.style.height = `${viewport.height}px`;
+                textLayer.style.position = 'absolute';
+                textLayer.style.top = '0';
+                textLayer.style.left = '0';
+                wrapper.appendChild(textLayer);
+
+                container.appendChild(wrapper);
+
+                const renderContext = { canvasContext: canvas.getContext('2d'), viewport };
+                await page.render(renderContext).promise;
+
+                // Render text for selection
+                const textContent = await page.getTextContent();
+                pdfjsLib.renderTextLayer({
+                    textContent,
+                    container: textLayer,
+                    viewport,
+                    textDivs: []
+                });
+
+                // Render existing highlights
+                highlights.filter(h => h.page === i).forEach(h => renderHighlight(h, highlightLayer));
+            }
+        }
+
+        async function trackPage(pageNum) {
+            if (window.ReaderDB.db) {
+                const pdf = await window.ReaderDB.get('pdfs', currentPDFHash);
+                if (pdf) {
+                    pdf.current_page = pageNum;
+                    pdf.zoom = scale;
+                    await window.ReaderDB.put('pdfs', pdf);
+                }
+            }
+            // Optional: keep backend sync
+            fetch('/api/pdf/track', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pdf_hash: currentPDFHash, page: pageNum, zoom: scale })
             });
         }
+
+        async function toggleBookmark() {
+            const isBookmarked = document.getElementById('bookmark-page-btn').classList.contains('text-yellow-500');
+            const pageNum = currentPage;
+
+            if (isBookmarked) {
+                await window.ReaderDB.deleteBookmark(currentPDFHash, pageNum);
+                await fetch(`/api/pdf/bookmarks?hash=${currentPDFHash}&page=${pageNum}`, { method: 'DELETE' });
+                document.getElementById('bookmark-page-btn').classList.remove('text-yellow-500');
+                document.getElementById('bookmark-page-btn').classList.add('text-slate-400');
+            } else {
+                await window.ReaderDB.put('bookmarks', { pdf_hash: currentPDFHash, page: pageNum });
+                await fetch('/api/pdf/bookmarks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pdf_hash: currentPDFHash, page: pageNum })
+                });
+                document.getElementById('bookmark-page-btn').classList.add('text-yellow-500');
+                document.getElementById('bookmark-page-btn').classList.remove('text-slate-400');
+            }
+
+            // Refresh sidebar
+            const bookmarks = await window.ReaderDB.getAllByIndex('bookmarks', 'pdf_hash', currentPDFHash);
+            updateBookmarksSidebar(bookmarks.map(x => x.page));
+        }
+
+        async function updateLibrarySidebar() {
+            if (!window.ReaderDB.db) await window.ReaderDB.init();
+            const el = document.getElementById('pdf-library');
+            const pdfs = await window.ReaderDB.getAll('pdfs');
+            if (!pdfs || pdfs.length === 0) {
+                el.innerHTML = '<p class="text-slate-400 italic text-xs px-2">Library empty</p>';
+                return;
+            }
+            el.innerHTML = '';
+            pdfs.sort((a, b) => b.last_updated - a.last_updated).forEach(p => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center gap-2 truncate text-[10px]";
+                btn.innerHTML = `<svg class="w-3 h-3 text-goblue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg> ${p.title}`;
+                btn.onclick = () => loadPDF(p.hash);
+                el.appendChild(btn);
+            });
+        }
+
+        async function updateBookmarkIcon(pageNum) {
+            const bookmarks = await window.ReaderDB.getAllByIndex('bookmarks', 'pdf_hash', currentPDFHash);
+            if (bookmarks && bookmarks.some(x => x.page === pageNum)) {
+                document.getElementById('bookmark-page-btn').classList.add('text-yellow-500');
+                document.getElementById('bookmark-page-btn').classList.remove('text-slate-400');
+            } else {
+                document.getElementById('bookmark-page-btn').classList.remove('text-yellow-500');
+                document.getElementById('bookmark-page-btn').classList.add('text-slate-400');
+            }
+        }
+
+        function updateBookmarksSidebar(bookmarks) {
+            const el = document.getElementById('pdf-bookmarks');
+            if (!bookmarks || bookmarks.length === 0) {
+                el.innerHTML = '<p class="text-slate-400 italic text-xs px-2">No bookmarks</p>';
+                return;
+            }
+            el.innerHTML = '';
+            bookmarks.sort((a, b) => a - b).forEach(p => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center gap-2";
+                btn.innerHTML = `<svg class="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg> Page ${p}`;
+                btn.onclick = () => scrollToPageNum(p);
+                el.appendChild(btn);
+            });
+        }
+
+        function scrollToPageNum(p) {
+            const target = document.getElementById(`page-wrapper-${p}`);
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderHighlight(h, layer) {
+            const rects = JSON.parse(h.rect_json);
+            rects.forEach(r => {
+                const div = document.createElement('div');
+                div.className = 'highlight';
+                div.style.left = `${r.left}px`;
+                div.style.top = `${r.top}px`;
+                div.style.width = `${r.width}px`;
+                div.style.height = `${r.height}px`;
+                div.style.backgroundColor = h.color || 'rgba(255, 255, 0, 0.4)';
+                layer.appendChild(div);
+            });
+        }
+
+        // Selection Handling
+        document.addEventListener('mouseup', (e) => {
+            const selection = window.getSelection();
+            if (selection.toString().trim().length > 0) {
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                toolbar.style.display = 'flex';
+                toolbar.style.top = `${rect.top - 40}px`;
+                toolbar.style.left = `${rect.left}px`;
+            } else {
+                toolbar.style.display = 'none';
+            }
+        });
+
+        async function highlightSelection() {
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+
+            const range = selection.getRangeAt(0);
+            const rects = Array.from(range.getClientRects());
+
+            // Find which page this is on
+            const container = range.commonAncestorContainer.parentElement;
+            const wrapper = container.closest('.pdf-page-wrapper');
+            if (!wrapper) return;
+
+            const pageNum = parseInt(wrapper.dataset.pageNumber);
+            const wrapperRect = wrapper.getBoundingClientRect();
+
+            const savedRects = rects.map(r => ({
+                top: r.top - wrapperRect.top,
+                left: r.left - wrapperRect.left,
+                width: r.width,
+                height: r.height
+            }));
+
+            const highlight = {
+                pdf_hash: currentPDFHash,
+                page: pageNum,
+                rect_json: JSON.stringify(savedRects),
+                color: 'rgba(255, 255, 0, 0.4)',
+                content: selection.toString()
+            };
+
+            await window.ReaderDB.put('highlights', highlight);
+
+            await fetch('/api/pdf/highlights', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(highlight)
+            });
+
+            renderHighlight(highlight, wrapper.querySelector('.highlight-layer'));
+            selection.removeAllRanges();
+            toolbar.style.display = 'none';
+        }
+
+        function extractSelectionToEditor() {
+            const text = window.getSelection().toString();
+            if (window.editor) {
+                const current = window.editor.getValue();
+                window.editor.setValue(current + "\n\n// Extracted:\n" + text);
+            }
+            toolbar.style.display = 'none';
+            window.getSelection().removeAllRanges();
+        }
+
+        // Auto-scan feature removed. User is encouraged to manually type examples.
+
+        async function loadOutline() {
+            const outline = await pdfDoc.getOutline();
+            const outlineEl = document.getElementById('pdf-outline');
+            outlineEl.innerHTML = '';
+            if (outline && outline.length > 0) {
+                renderOutlineItems(outline, outlineEl, 0);
+            } else {
+                outlineEl.innerHTML = '<p class="text-slate-400 italic text-xs px-2">No outline found</p>';
+            }
+        }
+
+        function renderOutlineItems(items, container, depth) {
+            items.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left px-2 py-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 block transition-colors text-xs`;
+                btn.style.paddingLeft = `${(depth + 1) * 0.5}rem`;
+                btn.textContent = (item.items && item.items.length > 0 ? (item.open ? '▼ ' : '▶ ') : '') + item.title;
+                btn.onclick = () => scrollToPage(item);
+                container.appendChild(btn);
+                if (item.items && item.items.length > 0) {
+                    renderOutlineItems(item.items, container, depth + 1);
+                }
+            });
+        }
+
+        async function scrollToPage(item) {
+            let dest = item.dest;
+            if (typeof dest === 'string') dest = await pdfDoc.getDestination(dest);
+            const pageNum = await pdfDoc.getPageIndex(dest[0]) + 1;
+            const el = document.getElementById(`page-wrapper-${pageNum}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Resizing Logic
+        const resizerV = document.getElementById('resize-v');
+        const workspace = document.getElementById('workspace');
+        let isResizingV = false;
+
+        resizerV.addEventListener('mousedown', () => isResizingV = true);
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizingV) return;
+            const width = window.innerWidth - e.clientX;
+            if (width > 300 && width < 800) {
+                workspace.style.width = `${width}px`;
+                if (window.editor) window.editor.layout();
+            }
+        });
+
+        const resizerH = document.getElementById('resize-h');
+        const editorBox = document.getElementById('editor-container');
+        let isResizingH = false;
+
+        resizerH.addEventListener('mousedown', () => isResizingH = true);
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizingH) return;
+            const workspaceRect = workspace.getBoundingClientRect();
+            const height = workspaceRect.bottom - e.clientY;
+            if (height > 100 && height < workspaceRect.height - 100) {
+                editorBox.style.height = `${height}px`;
+                if (window.editor) window.editor.layout();
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isResizingV = false;
+            isResizingH = false;
+        });
+
+        // Debounced Auto-Save for Notes
+        const notesTextArea = document.getElementById('notes-ta');
+        const notesStatus = document.getElementById('notes-status');
+        let notesSaveTimeout;
+
+        notesTextArea.addEventListener('input', () => {
+            notesStatus.textContent = 'Saving...';
+            notesStatus.classList.add('text-blue-500');
+            clearTimeout(notesSaveTimeout);
+
+            notesSaveTimeout = setTimeout(async () => {
+                if (!currentPDFHash) return;
+
+                const notes = notesTextArea.value;
+                await window.ReaderDB.put('notes', {
+                    pdf_hash: currentPDFHash,
+                    page: 1, // Global notes
+                    content: notes,
+                    updated_at: Date.now()
+                });
+
+                // Optional: sync to backend
+                fetch('/api/pdf/notes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        pdf_hash: currentPDFHash,
+                        page: 1,
+                        content: notes
+                    })
+                }).catch(e => console.error("Sync error:", e));
+
+                notesStatus.textContent = 'Saved ✓';
+                notesStatus.classList.remove('text-blue-500');
+            }, 800);
+        });
+
+        async function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const margin = 20;
+            let cursorY = 20;
+            const pageWidth = doc.internal.pageSize.width;
+
+            // Title Banner
+            doc.setFillColor(0, 173, 216); // Go Blue
+            doc.rect(0, 0, pageWidth, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont("helvetica", "bold");
+            doc.text("Study Guide & Export", margin, 26);
+
+            cursorY = 55;
+            doc.setTextColor(50, 50, 50);
+            doc.setFontSize(16);
+            doc.setFont("helvetica", "normal");
+            doc.text("Document: " + document.getElementById('pdf-name').textContent, margin, cursorY);
+            cursorY += 15;
+
+            const drawHeader = (title) => {
+                if (cursorY > 260) { doc.addPage(); cursorY = 20; }
+                doc.setDrawColor(200, 200, 200);
+                doc.line(margin, cursorY - 5, pageWidth - margin, cursorY - 5);
+                doc.setFontSize(14);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(0, 173, 216);
+                doc.text(title, margin, cursorY + 2);
+                cursorY += 12;
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(50, 50, 50);
+            };
+
+            // Notes
+            const noteObj = await window.ReaderDB.get('notes', [currentPDFHash, 1]);
+            if (noteObj && noteObj.content.trim() !== '') {
+                drawHeader("Personal Notes (Global)");
+                doc.setFontSize(11);
+                const splitNotes = doc.splitTextToSize(noteObj.content, pageWidth - margin * 2);
+                if (cursorY + (splitNotes.length * 5) > 280) { doc.addPage(); cursorY = 20; }
+                doc.text(splitNotes, margin, cursorY);
+                cursorY += (splitNotes.length * 5) + 10;
+            }
+
+            // Highlights
+            const highlights = await window.ReaderDB.getAllByIndex('highlights', 'pdf_hash', currentPDFHash);
+            if (highlights && highlights.length > 0) {
+                drawHeader("Highlighted Concepts");
+                doc.setFontSize(10);
+                highlights.forEach(h => {
+                    const hText = `• [Page ${h.page}]: ${h.content}`;
+                    const splitH = doc.splitTextToSize(hText, pageWidth - margin * 2);
+                    if (cursorY + (splitH.length * 5) > 280) { doc.addPage(); cursorY = 20; }
+                    doc.text(splitH, margin, cursorY);
+                    cursorY += (splitH.length * 5) + 4;
+                });
+                cursorY += 6;
+            }
+
+            // Extracted Code Snippets removed. Rendering Scratchpad only.
+
+            // Editor Scratchpad
+            if (window.editor && window.editor.getValue().trim() !== '') {
+                drawHeader("Scratchpad Code");
+                doc.setFontSize(9);
+                doc.setFont("courier", "normal");
+                doc.setTextColor(30, 30, 30);
+                const codeText = window.editor.getValue();
+                const splitCode = doc.splitTextToSize(codeText, pageWidth - margin * 2);
+                if (cursorY + (splitCode.length * 4) > 280) { doc.addPage(); cursorY = 20; }
+                doc.text(splitCode, margin, cursorY);
+            }
+
+            doc.save(`GolangCodes_StudyGuide_${document.getElementById('pdf-name').textContent.replace(/\s+/g, '_')}.pdf`);
+            alert("Study Guide exported successfully!");
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPDF('/static/AnIntroductionToProgrammingInGo.pdf');
+            document.getElementById('export-pdf-btn').onclick = exportToPDF;
+            document.getElementById('bookmark-page-btn').onclick = toggleBookmark;
+
+            // Page Navigation
+            document.getElementById('next-page-btn').onclick = () => {
+                const next = container.querySelector(`[data-page-number="${currentPage + 1}"]`);
+                if (next) {
+                    next.scrollIntoView({ behavior: 'smooth' });
+                    currentPage++;
+                }
+            };
+            document.getElementById('prev-page-btn').onclick = () => {
+                const prev = container.querySelector(`[data-page-number="${currentPage - 1}"]`);
+                if (prev) {
+                    prev.scrollIntoView({ behavior: 'smooth' });
+                    currentPage--;
+                }
+            };
+
+            // Monaco
+            require(['vs/editor/editor.main'], function () {
+                window.editor = monaco.editor.create(document.getElementById('editor'), {
+                    value: 'package main\n\nimport "fmt"\n\nfunc main() {\n\t// Type your Go examples here and hit Run!\n\tfmt.Println("Hello, Go Reader!")\n}',
+                    language: 'go',
+                    theme: document.documentElement.classList.contains('dark') ? 'vs-dark' : 'vs',
+                    automaticLayout: true,
+                    minimap: { enabled: false },
+                    fontSize: 12,
+                    fontFamily: 'JetBrains Mono, monospace'
+                });
+
+                let saveTimeout;
+                window.editor.onDidChangeModelContent(() => {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(async () => {
+                        if (currentPDFHash) {
+                            await window.ReaderDB.put('notes', {
+                                pdf_hash: currentPDFHash,
+                                page: 'scratchpad',
+                                content: window.editor.getValue(),
+                                updated_at: Date.now()
+                            });
+                        }
+                    }, 500); // Debounce saves by 500ms
+                });
+            });
+
+            // HTMX Sync
+            document.body.addEventListener('htmx:configRequest', function (evt) {
+                if (evt.detail.path === '/api/run') {
+                    document.getElementById('code-input').value = window.editor.getValue();
+                }
+            });
+
+            // Theme toggle
+            document.getElementById('theme-toggle').onclick = () => {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                if (window.editor) monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs');
+            };
+
+            // Zoom
+            document.getElementById('zoom-in').onclick = () => { scale += 0.2; renderAllPages(); document.getElementById('zoom-level').textContent = Math.round(scale * 100) + '%'; };
+            document.getElementById('zoom-out').onclick = () => { if (scale > 0.5) { scale -= 0.2; renderAllPages(); document.getElementById('zoom-level').textContent = Math.round(scale * 100) + '%'; } };
+
+            // Upload
+            document.getElementById('upload-btn').onclick = () => document.getElementById('pdf-upload').click();
+            document.getElementById('pdf-upload').onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    loadPDF(file);
+                }
+            };
+        });
     </script>
 </body>
 

@@ -145,11 +145,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 3. Mark links in sidebar as completed with read counts
     const sidebarLinks = document.querySelectorAll('aside a');
     const readCounts = window.StorageAPI.getReadCounts();
     sidebarLinks.forEach(link => {
-        // HTMX links or Standard Links
         const href = decodeURIComponent(link.getAttribute('href') || '');
         if (readCounts[href] > 0) {
             const count = readCounts[href];

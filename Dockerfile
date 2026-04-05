@@ -1,7 +1,7 @@
 # Use a full Go environment to build AND run the application
 # We need the full Go image instead of a slim alpine runtime because our /api/run
 # endpoint actively uses the `go run` command to compile user code securely on the fly!
-FROM golang:1.23-alpine
+FROM golang:1.24-alpine
 
 WORKDIR /app
 

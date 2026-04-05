@@ -296,17 +296,17 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
                 <div class="text-center">
                     <div class="font-heading text-3xl font-bold text-goblue-400">
-                        24+
+                        165
                     </div>
                     <div class="text-slate-400 text-sm mt-1">
-                        Structured Lessons
+                        Pages
                     </div>
                 </div>
                 <div class="text-center">
                     <div class="font-heading text-3xl font-bold text-goblue-400">
                         100%
                     </div>
-                    <div class="text-slate-400 text-sm mt-1">Awesome</div>
+                    <div class="text-slate-400 text-sm mt-1">Free & Open Source</div>
                 </div>
                 <div class="text-center">
                     <div class="font-heading text-3xl font-bold text-goblue-400">
@@ -435,42 +435,6 @@
         </div>
     </section>
 
-    <!-- Course Preview -->
-    <section class="py-16 md:py-24 bg-slate-900/30 border-y border-white/5">
-        <div class="max-w-4xl mx-auto px-6">
-            <div class="text-center mb-10 md:mb-12">
-                <h2 class="font-heading text-3xl md:text-4xl font-bold tracking-tight">
-                    Course Syllabus
-                </h2>
-                <p class="text-slate-400 mt-4 text-lg">
-                    From zero to production-grade Go. Every lesson has
-                    runnable code.
-                </p>
-            </div>
-
-            <div class="grid sm:grid-cols-2 gap-3">
-                {{range .Resources}}
-                <a href="{{.Path}}"
-                    class="flex items-center gap-4 px-5 py-4 rounded-xl border border-white/5 hover:border-goblue-500/30 hover:bg-white/[0.02] transition-all group">
-                    <div
-                        class="w-8 h-8 rounded-lg bg-goblue-500/10 flex items-center justify-center flex-shrink-0 group-hover:bg-goblue-500/20 transition-colors">
-                        <svg class="w-4 h-4 text-goblue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                    </div>
-                    <span
-                        class="text-slate-300 group-hover:text-white font-medium text-sm transition-colors">{{.Title}}</span>
-                    <svg class="w-4 h-4 text-slate-600 group-hover:text-goblue-400 ml-auto transition-colors"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
-                {{end}}
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="border-t border-white/5 py-10">
         <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -481,9 +445,8 @@
             <div class="flex items-center gap-6 text-sm">
                 <a href="https://github.com/Golangcodes/golangcodes" target="_blank"
                     class="text-slate-500 hover:text-white transition-colors">GitHub</a>
-                <a href="/go/Introduction" class="text-slate-500 hover:text-white transition-colors">Lessons</a>
-                <a href="/go/Community Resources"
-                    class="text-slate-500 hover:text-white transition-colors">Community</a>
+                <a href="/go/Introduction" class="text-slate-500 hover:text-white transition-colors">Reader</a>
+                <a href="/resources" class="text-slate-500 hover:text-white transition-colors">Resources</a>
                 <a href="https://buymeacoffee.com/hersi" target="_blank"
                     class="text-slate-500 hover:text-pink-400 transition-colors flex items-center gap-1">♥ Support
                     Us</a>

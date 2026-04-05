@@ -1,60 +1,14 @@
 package handlers
 
 import (
+	"bytes"
 	"html/template"
 	"net/http"
 	"os"
-	"strings"
+
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
 )
-
-func slugify(s string) string {
-	return strings.ReplaceAll(strings.ToLower(s), " ", "-")
-}
-
-type Resource struct {
-	Title        string
-	Path         string
-	Content      template.HTML
-	QualityScore int
-	TotalVotes   int
-}
-
-type PageData struct {
-	Resources      []Resource
-	ActiveResource *Resource
-	PrevResource   *Resource
-	NextResource   *Resource
-}
-
-func getResources() []Resource {
-	var resources []Resource
-	dir := "Go"
-
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		return resources
-	}
-
-	entryMap := make(map[string]os.DirEntry)
-	for _, entry := range entries {
-		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".md") {
-			title := strings.TrimSuffix(entry.Name(), ".md")
-			entryMap[title] = entry
-		}
-	}
-
-	for title := range entryMap {
-		score, votes := Store.GetScoreAndVotes(slugify(title))
-		resources = append(resources, Resource{
-			Title:        title,
-			Path:         "/go/" + slugify(title),
-			QualityScore: score,
-			TotalVotes:   votes,
-		})
-	}
-
-	return resources
-}
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
@@ -68,11 +22,33 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := PageData{
-		Resources: getResources(),
+	tmpl.Execute(w, nil)
+}
+
+func ResourcesPageHandler(w http.ResponseWriter, r *http.Request) {
+	md, err := os.ReadFile("Go/Community Resources.md")
+	if err != nil {
+		http.Error(w, "Could not load resources", http.StatusInternalServerError)
+		return
 	}
 
-	tmpl.Execute(w, data)
+	md_parser := goldmark.New(goldmark.WithExtensions(extension.Linkify))
+
+	var buf bytes.Buffer
+	if err = md_parser.Convert(md, &buf); err != nil {
+		http.Error(w, "Could not render resources", http.StatusInternalServerError)
+		return
+	}
+
+	tmpl, err := template.ParseFiles("templates/resources.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err = tmpl.Execute(w, template.HTML(buf.String())); err != nil {
+		http.Error(w, "Execute Error: "+err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func ResourceHandler(w http.ResponseWriter, r *http.Request) {
@@ -81,15 +57,8 @@ func ResourceHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	resources := getResources()
 
-	data := PageData{
-		Resources: resources,
-	}
-
-	err = tmpl.Execute(w, data)
-	if err != nil {
+	if err = tmpl.Execute(w, nil); err != nil {
 		http.Error(w, "Execute Error: "+err.Error(), http.StatusInternalServerError)
-		return
 	}
 }

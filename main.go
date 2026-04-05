@@ -18,6 +18,7 @@ func main() {
 
 	// Routes
 	http.HandleFunc("/", handlers.HomeHandler)
+	http.HandleFunc("/resources", handlers.ResourcesPageHandler)
 	http.HandleFunc("/api/run", handlers.RunHandler)
 	http.HandleFunc("/api/rate", handlers.RateHandler)
 	http.HandleFunc("/go/", handlers.ResourceHandler)
